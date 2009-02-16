@@ -1,0 +1,16 @@
+# Changes for eBay::API::Simple
+
+0.04 Mon Feb 16 15:40:05 PST 2009
+    - release to CPAN
+    - code cleanup
+    - add ebay.ini support
+    - fix tests
+    - fix xmlout bug in Shopping backend
+    
+0.02 Thu Jan  8 13:34:36 PST 2009
+    - several doc udpates
+    - made some cosmetic changes
+
+0.01 Thu Jan  8 10:03:09 PST 2009
+    - alpha release for this eBay::API::Simple library
+
