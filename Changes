@@ -1,5 +1,9 @@
 # Changes for eBay::API::Simple
 
+0.05 Mon Jul 20 17:30:43 PDT 2009
+    - add default timeout of 20 seconds
+    - added support for username/password on Trading API
+
 0.04 Mon Feb 16 15:40:05 PST 2009
     - release to CPAN
     - code cleanup

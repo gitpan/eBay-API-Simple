@@ -14,7 +14,7 @@ use XML::Parser;
 $XML::Simple::PREFERRED_PARSER = 'XML::Parser';
 
 our $DEBUG = 0;
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 NAME 
 
@@ -49,8 +49,9 @@ sub new {
     bless( $self, $class );
     
     # set some defaults 
-    $self->api_config->{siteid} = 0;
-    
+    $self->api_config->{siteid}  = 0;
+    $self->api_config->{timeout} = 20 unless defined $api_args->{timeout};
+
     # set the config args 
     $self->api_config_append( $api_args );
     
@@ -123,6 +124,17 @@ Accessor for the HTTP request object
 sub request_object {
     my $self = shift;
     return $self->{request_object};
+} 
+
+=head1 request_content
+
+Accessor for the HTTP request body content
+
+=cut
+
+sub request_content {
+    my $self = shift;
+    return $self->{request_object}->as_string();
 } 
 
 =head1 response_object
