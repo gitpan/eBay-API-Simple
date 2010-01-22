@@ -3,7 +3,8 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     NAME              => 'eBay::API::Simple',
-    VERSION_FROM      => 'lib/eBay/API/Simple.pm',
+    #VERSION_FROM      => 'lib/eBay/API/Simple.pm',
+    VERSION           => '0.09',
     PREREQ_PM         => {
         'XML::LibXML'    => 0,
         'HTTP::Headers'  => 0,
