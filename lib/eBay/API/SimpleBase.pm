@@ -13,6 +13,8 @@ use XML::Parser;
 # set the preferred xml simple parser
 $XML::Simple::PREFERRED_PARSER = 'XML::Parser';
 
+our $VERSION = $eBay::API::Simple::VERSION;
+
 our $DEBUG = 0;
 
 =head1 NAME 
