@@ -17,7 +17,7 @@ eBay::API::Simple::HTML
 
 =head1 SYNPOSIS
 
-  my $call = ebay::API::Simple::HTML->new();
+  my $call = eBay::API::Simple::HTML->new();
   $call->execute( 'http://www.timkeefer.com/blog/view/portfolio' );
 
   if ( $call->has_error() ) {

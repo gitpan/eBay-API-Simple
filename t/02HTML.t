@@ -24,7 +24,7 @@ BEGIN {
 
 my $call = eBay::API::Simple::HTML->new();
 
-$call->execute( 'http://www.example.com/' );
+$call->execute( 'http://www.timkeefer.com/?utm_campaign=simple_test' );
 
 if ( $call->has_error() ) {
     fail( 'api call failed: ' . $call->errors_as_string() );
@@ -33,12 +33,12 @@ else {
     is( ref $call->response_dom(), 'XML::LibXML::Document', 'response dom' );
     is( ref $call->response_hash(), 'HASH', 'response hash' );
 
-    like( $call->response_hash->{body}{p}[0], 
-        qr/^You have reached this web page by typing/, 
+    like( $call->response_hash->{head}{title}, 
+        qr/^Tim Keefer/, 
         'hash test' 
     );
     
-    ok( $call->nodeContent('title') eq 'Example Web Page', 'nodeContent test' );
+    ok( $call->nodeContent('title') eq 'Tim Keefer | timkeefer.com ', 'nodeContent test' );
     #diag Dumper( $call->response_hash );
 }
 

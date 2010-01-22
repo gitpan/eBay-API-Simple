@@ -17,7 +17,7 @@ eBay::API::Simple::Trading
 
 =head1 SYNPOSIS
 
-  my $call = ebay::API::Simple::Trading->new();
+  my $call = eBay::API::Simple::Trading->new();
   $call->execute( 'GetSearchResults', { Query => 'shoe' } );
 
   if ( $call->has_error() ) {
@@ -352,7 +352,7 @@ sub _fish_ebay_ini {
          );
     }
 
-    foreach my $file ( @files ) {
+    foreach my $file ( reverse @files ) {
         if ( open( FILE, "<", $file ) ) {
             while ( my $line = <FILE> ) {
                 chomp( $line );
@@ -366,6 +366,7 @@ sub _fish_ebay_ini {
                     $v =~ s/\s+$//;
 
                     $self->{_ebay_ini}{$k} = $v;
+           
                 }
             }
             close FILE;

@@ -1,20 +1,29 @@
 # Changes for eBay::API::Simple
 
+0.07 Fri Jan 22 11:34:36 PST 2010
+- add support for eBay Finding2.0 services
+  * eBay::API::Simple::Finding
+- add proxy support to base class
+
+0.06 Mon Aug  3 09:06:58 PDT 2009
+- fix fish config routine
+- add Simple.pm subclass
+
 0.05 Mon Jul 20 17:30:43 PDT 2009
-    - add default timeout of 20 seconds
-    - added support for username/password on Trading API
+- add default timeout of 20 seconds
+- added support for username/password on Trading API
 
 0.04 Mon Feb 16 15:40:05 PST 2009
-    - release to CPAN
-    - code cleanup
-    - add ebay.ini support
-    - fix tests
-    - fix xmlout bug in Shopping backend
-    
+- release to CPAN
+- code cleanup
+- add ebay.ini support
+- fix tests
+- fix xmlout bug in Shopping backend
+
 0.02 Thu Jan  8 13:34:36 PST 2009
-    - several doc udpates
-    - made some cosmetic changes
+- several doc udpates
+- made some cosmetic changes
 
 0.01 Thu Jan  8 10:03:09 PST 2009
-    - alpha release for this eBay::API::Simple library
+- alpha release for this eBay::API::Simple library
 

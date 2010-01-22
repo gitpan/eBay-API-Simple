@@ -17,7 +17,7 @@ eBay::API::Simple::RSS
 
 =head1 SYNPOSIS
 
-  my $call = ebay::API::Simple::RSS->new();
+  my $call = eBay::API::Simple::RSS->new();
   $call->execute(
     'http://sfbay.craigslist.org/search/sss?query=shirt&format=rss'
   );

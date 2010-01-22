@@ -1,4 +1,4 @@
-package eBay::API::Simple::Shopping;
+package eBay::API::Simple::Finding;
 
 use strict;
 use warnings;
@@ -13,12 +13,14 @@ our $DEBUG = 0;
 
 =head1 NAME
 
-eBay::API::Simple::Shopping
+eBay::API::Simple::Finding
 
 =head1 SYNPOSIS
 
-  my $call = eBay::API::Simple::Shopping->new();
-  $call->execute( 'FindItemsAdvanced', { QueryKeywords => 'shoe' } );
+  my $call = eBay::API::Simple::Finding->new( 
+    { appid => '<your app id here>' } 
+  );
+  $call->execute( 'findItemsByKeywords', { keywords => 'shoe' } );
 
   if ( $call->has_error() ) {
      die "Call Failed:" . $call->errors_as_string();
@@ -28,41 +30,33 @@ eBay::API::Simple::Shopping
   my $dom  = $call->response_dom();
   my $hash = $call->response_hash();
 
-  print $call->nodeContent( 'Timestamp' );
-  print $call->nodeContent( 'TotalItems' );
+  print $call->nodeContent( 'timestamp' );
+  print $call->nodeContent( 'totalEntries' );
 
   my @nodes = $dom->findnodes(
-    '/FindItemsAdvancedResponse/SearchResult/ItemArray/Item'
+    '//item'
   );
 
   foreach my $n ( @nodes ) {
-    print $n->findvalue('Title/text()') . "\n";
+    print $n->findvalue('title/text()') . "\n";
   }
   
 =head1 new 
 
 Constructor for the Shopping API call
 
-  my $call = ebay::API::Simple::Shopping->new();
-  $call->execute( 'FindItems', { QueryKeywords => 'shoe' } );
-
-  my $call = ebay::API::Simple::Shopping->new( {
-    siteid  => 0,         # custom site id 
-    uri     => '/shopping',  # custom uri 
-    appid   => 'myappid', # custom appid
-    version => '518',     # custom version
-    https   => 0,         # 0 or 1
+  my $call = eBay::API::Simple::Finding->new( 
+    { appid => '<your app id here>' } 
+  );
+ 
+  my $call = eBay::API::Simple::Finding->new( {
+    siteid  => 'EBAY-US',       # custom site id 
+    domain  => 'svcs.ebay.com', # custom domain
+    uri     => '/services/search/FindingService/v1',  # custom uri 
+    appid   => '<your appid>',    # custom appid
+    version => '1.0.0',      # custom version
+    https   => 0,            # 0 or 1
   } );
-
-  Defaults:
-
-    siteid  = 0
-    uri     = /shopping
-    domain  = open.api.ebay.com
-    version = 527
-    https   = 0
-
-    appid   = undef
     
 =head2 ebay.ini
 
@@ -79,18 +73,56 @@ sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
 
-    $self->api_config->{domain}  ||= 'open.api.ebay.com';
-    $self->api_config->{uri}     ||= '/shopping';
-
-    $self->api_config->{version} ||= '527';
+    $self->api_config->{domain}  ||= 'svcs.ebay.com';
+    $self->api_config->{uri}     ||= '/services/search/FindingService/v1';
+    $self->api_config->{version} ||= '1.0.0';
     $self->api_config->{https}   ||= 0;
-    $self->api_config->{siteid}  ||= 0;
+    $self->api_config->{siteid}  ||= 'EBAY-US';
     $self->api_config->{response_encoding} ||= 'XML'; # JSON, NV, SOAP
     $self->api_config->{request_encoding}  ||= 'XML';
 
     $self->_load_credentials();
     
     return $self;    
+}
+
+=head1 _get_request_body
+
+This method supplies the request body for the Shopping API call
+
+=cut
+
+sub _get_request_body {
+    my $self = shift;
+
+    my $xml = "<?xml version='1.0' encoding='utf-8'?>"
+        . "<" . $self->{verb} . "Request xmlns=\"http://www.ebay.com/marketplace/search/v1/services\">"
+        . XMLout( $self->{call_data}, NoAttr => 1, KeepRoot => 1, RootName => undef )
+        . "</" . $self->{verb} . "Request>";
+
+    return $xml; 
+}
+
+=head1 _get_request_headers 
+
+This method supplies the headers for the Shopping API call
+
+=cut
+
+sub _get_request_headers {
+    my $self = shift;
+   
+    my $obj = HTTP::Headers->new();
+
+    $obj->push_header("X-EBAY-SOA-SERVICE-VERSION" => $self->api_config->{version});
+    $obj->push_header("X-EBAY-SOA-SECURITY-APPNAME"  => $self->api_config->{appid});
+    $obj->push_header("X-EBAY-SOA-GLOBAL-ID"  => $self->api_config->{siteid});
+    $obj->push_header("X-EBAY-SOA-OPERATION-NAME" => $self->{verb});
+    $obj->push_header("X-EBAY-SOA-REQUEST-DATA-FORMAT"  => $self->api_config->{request_encoding});
+    $obj->push_header("X-EBAY-SOA-RESPONSE-DATA-FORMAT" => $self->api_config->{response_encoding});
+    $obj->push_header("Content-Type" => "text/xml");
+    
+    return $obj;
 }
 
 =head1 execute( $verb, $call_data )
@@ -100,7 +132,7 @@ Calling this method will make build and execute the api request.
   $verb      = call verb, i.e. FindItems 
   $call_data = hashref of call_data that will be turned into xml.
 
-  $call->execute( 'FindItemsAdvanced', { QueryKeywords => 'shoe' } );
+  $call->execute( 'findItemsByKeywords', { keywords => 'shoe' } );
 
 =cut
 
@@ -128,46 +160,6 @@ sub execute {
     }
 
 }
-
-=head1 _get_request_body
-
-This method supplies the request body for the Shopping API call
-
-=cut
-
-sub _get_request_body {
-    my $self = shift;
-
-    my $xml = "<?xml version='1.0' encoding='utf-8'?>"
-        . "<" . $self->{verb} . "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
-        . XMLout( $self->{call_data}, NoAttr => 1, KeepRoot => 1, RootName => undef )
-        . "</" . $self->{verb} . "Request>";
-
-    return $xml; 
-}
-
-=head1 _get_request_headers 
-
-This method supplies the headers for the Shopping API call
-
-=cut
-
-sub _get_request_headers {
-    my $self = shift;
-   
-    my $obj = HTTP::Headers->new();
-
-    $obj->push_header("X-EBAY-API-VERSION" => $self->api_config->{version});
-    $obj->push_header("X-EBAY-API-APP-ID"  => $self->api_config->{appid});
-    $obj->push_header("X-EBAY-API-SITEID"  => $self->api_config->{siteid});
-    $obj->push_header("X-EBAY-API-CALL-NAME" => $self->{verb});
-    $obj->push_header("X-EBAY-API-REQUEST-ENCODING"  => $self->api_config->{request_encoding});
-    $obj->push_header("X-EBAY-API-RESPONSE-ENCODING" => $self->api_config->{response_encoding});
-    $obj->push_header("Content-Type" => "text/xml");
-    
-    return $obj;
-}
-
 =head1 _get_request_object 
 
 This method creates the request object and returns to the parent class
@@ -268,10 +260,10 @@ sub _fish_ebay_ini {
     return undef;
 }
 
-1;
-
 =head1 AUTHOR
 
 Tim Keefer <tim@timkeefer.com>
 
 =cut
+
+1;

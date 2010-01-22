@@ -8,11 +8,11 @@ BEGIN {
     my @skip_msg;
 
     eval {
-        use eBay::API::Simple::Shopping;
+        use eBay::API::Simple::Finding;
     };
     
     if ( $@ ) {
-        push @skip_msg, 'missing module eBay::API::Simple::Shopping, skipping test';
+        push @skip_msg, 'missing module eBay::API::Simple::Finding, skipping test';
     }
     if ( scalar( @skip_msg ) ) {
         plan skip_all => join( ' ', @skip_msg );
@@ -22,25 +22,17 @@ BEGIN {
     }    
 }
 
-my $call = eBay::API::Simple::Shopping->new(
+my $call = eBay::API::Simple::Finding->new(
     { appid => undef } # <----- your appid here
 );
-
-#$call->api_init( { 
-#    site_id => 0,
-#    uri     => $arg_uri,
-#    domain  => $arg_domain,
-#    app_id  => $arg_appid,
-#    version => $arg_version,
-#} );
 
 eval {
     if ( $call->api_config->{appid} eq "" ) {
         die "appid required to run tests";
     }
         
-    $call->execute( 'FindItems', 
-        { QueryKeywords => 'black shoes', MaxEntries => 10 } 
+    $call->execute( 'findItemsByKeywords', 
+        { keywords => 'black shoes' } 
     );
 };
 
@@ -49,7 +41,7 @@ SKIP: {
 
     #diag $call->request_content;
     #diag $call->response_content;
-
+    
     if ( $call->has_error() ) {
         fail( 'api call failed: ' . $call->errors_as_string() );
     }
@@ -57,43 +49,40 @@ SKIP: {
         is( ref $call->response_dom(), 'XML::LibXML::Document', 'response dom' );
         is( ref $call->response_hash(), 'HASH', 'response hash' );
 
-        like( $call->nodeContent('Timestamp'), 
+        like( $call->nodeContent('timestamp'), 
             qr/^\d{4}-\d{2}-\d{2}/, 
             'response timestamp' 
         );
     
-        ok( $call->nodeContent('TotalItems') > 10, 'response total items' );
-         diag( 'total items: ' . $call->nodeContent('TotalItems') );
+        ok( $call->nodeContent('totalEntries') > 10, 'response total entries' );
+         diag( 'total entries: ' . $call->nodeContent('totalEntries') );
     #    diag( Dumper( $call->response_hash() ) );
     }
 
-    $call->execute( 'BadCall', { QueryKeywords => 'shoe' } );
+    $call->execute( 'BadCall', { keywords => 'shoe' } );
 
     is( $call->has_error(), 1, 'look for error flag' );
     ok( $call->errors_as_string() ne '', 'check for error message' );
     ok( $call->response_content() ne '', 'check for response content' );
 
-    $call->execute( 'FindItemsAdvanced', { QueryKeywords => 'shoe' } );
+    $call->execute( 'findItemsByKeywords', { keywords => 'shoe' } );
 
     is( $call->has_error(), 0, 'error check' );
     is( $call->errors_as_string(), '', 'error string check' );
-    ok( $call->nodeContent('TotalItems') > 10, 'response total items' );
+    ok( $call->nodeContent('totalEntries') > 10, 'response total entries' );
 
-    #diag( Dumper( $call->response_content() ) );
+    #diag( Dumper( $call->response_hash() ) );
 
     my @nodes = $call->response_dom->findnodes(
-        '/FindItemsAdvancedResponse/SearchResult/ItemArray/Item'
+        '//item'
     );
 
+    my $count = 0;
     foreach my $n ( @nodes ) {
-        # diag( $n->findvalue('Title/text()') );
-        ok( $n->findvalue('Title/text()') ne '', 'title check' );
+        ++$count;
+        #diag( $n->findvalue('title/text()') );
+        ok( $n->findvalue('title/text()') ne '', "title check $count" );
     }
 
-
-    my $call2 = eBay::API::Simple::Shopping->new( { response_encoding => 'XML' } );
-    $call2->execute( 'FindPopularSearches', { QueryKeywords => 'shoe' } );
-
-    #diag( $call2->response_content() );
 }
 

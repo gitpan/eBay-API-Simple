@@ -14,7 +14,6 @@ use XML::Parser;
 $XML::Simple::PREFERRED_PARSER = 'XML::Parser';
 
 our $DEBUG = 0;
-our $VERSION = '0.05';
 
 =head1 NAME 
 
@@ -24,6 +23,7 @@ eBay::API::Simple - Simple version of the eBay API supporting all APIs
 
 This is the base class for the eBay::API::Simple::* libraries. 
 
+L<eBay::API::Simple::Finding>
 L<eBay::API::Simple::Shopping>
 L<eBay::API::Simple::Trading>
 L<eBay::API::Simple::HTML>
@@ -451,6 +451,15 @@ sub _get_request_agent {
     # timeout in seconds
     if ( defined $self->api_config->{timeout} ) {
         $ua->timeout( $self->api_config->{timeout} );
+    }
+    
+    # add proxy
+    if ( $self->api_config->{http_proxy} ) {
+        $ua->proxy( ['http'], $self->api_config->{http_proxy} );
+    }
+
+    if ( $self->api_config->{https_proxy} ) {
+        $ua->proxy( ['https'], $self->api_config->{https_proxy} );
     }
     
     return $ua;
