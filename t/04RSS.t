@@ -25,7 +25,7 @@ BEGIN {
 my $call = eBay::API::Simple::RSS->new();
 
 $call->execute(
-    'http://sfbay.craigslist.org/search/sss?query=shirt&format=rss'
+    'http://sfbay.craigslist.org/sss/index.rss'
 );
 
 if ( $call->has_error() ) {

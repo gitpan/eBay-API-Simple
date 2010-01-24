@@ -4,8 +4,9 @@ use strict; no warnings;
 use Data::Dumper;
 use lib qw/lib/;
 
+my @skip_msg;
+
 BEGIN {
-    my @skip_msg;
 
     eval {
         use eBay::API::Simple::Finding;
@@ -14,30 +15,37 @@ BEGIN {
     if ( $@ ) {
         push @skip_msg, 'missing module eBay::API::Simple::Finding, skipping test';
     }
+    
+       
     if ( scalar( @skip_msg ) ) {
         plan skip_all => join( ' ', @skip_msg );
     }
     else {
         plan qw(no_plan);
     }    
+
 }
 
-my $call = eBay::API::Simple::Finding->new(
-    { appid => undef } # <----- your appid here
-);
+my $call;
 
 eval {
-    if ( $call->api_config->{appid} eq "" ) {
-        die "appid required to run tests";
-    }
-        
+
+    $call = eBay::API::Simple::Finding->new(
+        { appid => undef } # <----- your appid here
+    );
+
+};
+
+if ( $@ ) {
+    push( @skip_msg, $@ );
+}
+
+SKIP: {
+    skip join("\n", @skip_msg), 1 if scalar(@skip_msg);
+   
     $call->execute( 'findItemsByKeywords', 
         { keywords => 'black shoes' } 
     );
-};
-
-SKIP: {
-    skip $@, 1 if $@;
 
     #diag $call->request_content;
     #diag $call->response_content;

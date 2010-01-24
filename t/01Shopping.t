@@ -4,8 +4,10 @@ use strict; no warnings;
 use Data::Dumper;
 use lib qw/lib/;
 
+my @skip_msg;
+
 BEGIN {
-    my @skip_msg;
+
 
     eval {
         use eBay::API::Simple::Shopping;
@@ -22,9 +24,15 @@ BEGIN {
     }    
 }
 
-my $call = eBay::API::Simple::Shopping->new(
-    { appid => undef } # <----- your appid here
-);
+my $call;
+eval {
+    $call = eBay::API::Simple::Shopping->new(
+        { appid => undef } # <----- your appid here
+    );
+};
+if ( $@ ) {
+    push( @skip_msg, $@ );
+}
 
 #$call->api_init( { 
 #    site_id => 0,
@@ -35,17 +43,15 @@ my $call = eBay::API::Simple::Shopping->new(
 #} );
 
 eval {
-    if ( $call->api_config->{appid} eq "" ) {
-        die "appid required to run tests";
-    }
         
-    $call->execute( 'FindItems', 
-        { QueryKeywords => 'black shoes', MaxEntries => 10 } 
-    );
 };
 
 SKIP: {
-    skip $@, 1 if $@;
+    skip join( ' ', @skip_msg), 1 if scalar( @skip_msg );
+
+    $call->execute( 'FindItems', 
+        { QueryKeywords => 'black shoes', MaxEntries => 10 } 
+    );
 
     #diag $call->request_content;
     #diag $call->response_content;

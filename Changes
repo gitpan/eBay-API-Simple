@@ -1,5 +1,8 @@
 # Changes for eBay::API::Simple
 
+0.10 Sat Jan 23 19:44:31 PST 2010
+- fix tests
+
 0.09 Fri Jan 22 11:54:36 PST 2010
 - fix version issue
 

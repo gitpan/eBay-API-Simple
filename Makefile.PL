@@ -4,7 +4,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME              => 'eBay::API::Simple',
     #VERSION_FROM      => 'lib/eBay/API/Simple.pm',
-    VERSION           => '0.09',
+    VERSION           => '0.10',
     PREREQ_PM         => {
         'XML::LibXML'    => 0,
         'HTTP::Headers'  => 0,
