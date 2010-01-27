@@ -13,11 +13,23 @@ our $DEBUG = 0;
 
 =head1 NAME
 
-eBay::API::Simple::Trading
+eBay::API::Simple::Trading - Support for eBay's Trading web service
 
-=head1 SYNPOSIS
+=head1 DESCRIPTION
 
-  my $call = eBay::API::Simple::Trading->new();
+This class provides support for eBay's Trading web services.
+
+See http://developer.ebay.com/products/trading/
+
+=head1 USAGE
+
+  my $call = eBay::API::Simple::Trading->new( { 
+    appid   => '<your appid>',
+    devid   => '<your devid>',
+    certid  => '<your certid>',
+    token   => '<auth token>',
+  } );
+  
   $call->execute( 'GetSearchResults', { Query => 'shoe' } );
 
   if ( $call->has_error() ) {
@@ -38,38 +50,77 @@ eBay::API::Simple::Trading
     print $n->findvalue('Title/text()') . "\n";
   }
 
-=head1 new
+=head1 PUBLIC METHODS
+
+=head2 new( { %options } } 
 
 Constructor for the Trading API call
 
-  my $call = ebay::API::Simple::Trading->new();
-  $call->execute( 'GetSearchResults', { Query => 'shoe' } );
+    my $call = eBay::API::Simple::Trading->new( { 
+      appid   => '<your appid>',
+      devid   => '<your devid>',
+      certid  => '<your certid>',
+      token   => '<auth token>',
+      ... 
+    } );
 
-  my $call = ebay::API::Simple::Trading->new( {
-    siteid  => 0,              # custom site id
-    uri     => '/ws/api.dll',  # custom uri
-    appid   => 'myappid',
-    devid   => 'mydevid',
-    certid  => 'mycertid',
-    version => '518',     # custom version
-    https   => 1,         # 0 or 1
-    domain  => 'open.api.ebay.com' # custom domain
-  } );
+=head3 Options
 
-Defaults:
+=over 4
 
-  siteid  = 0
-  uri     = /ws/api.dll
-  domain  = open.api.ebay.com
-  version = 543
-  https   = 1
+=item appid (required)
 
-  devid   = undef
-  appid   = undef
-  certid  = undef
-  token   = undef
+This is required by the web service and can be obtained at 
+http://developer.ebay.com
 
-=head2 ebay.ini
+=item devid (required)
+
+This is required by the web service and can be obtained at 
+http://developer.ebay.com
+
+=item certid (required)
+
+This is required by the web service and can be obtained at 
+http://developer.ebay.com
+
+=item token (required)
+
+This is required by the web service and can be obtained at 
+http://developer.ebay.com
+
+=item siteid
+
+eBay site id to be supplied to the web service endpoint
+
+defaults to 0
+
+=item domain
+
+domain for the web service endpoint
+
+defaults to open.api.ebay.com
+
+=item uri
+
+endpoint URI
+
+defaults to /ws/api.dll
+
+=item version
+
+Version to be supplied to the web service endpoint
+
+defaults to 543
+
+=item https
+
+Specifies is the API calls should be made over https.
+
+defaults to 1
+
+=back
+
+=head3 ALTERNATE CONFIG VIA ebay.ini
 
 The constructor will fallback to the ebay.ini file to get any missing
 credentials. The following files will be checked, ./ebay.ini, ~/ebay.ini,
@@ -85,7 +136,7 @@ credentials. The following files will be checked, ./ebay.ini, ~/ebay.ini,
  CertificateKey=SUYTYWTKWTYIUYTWIUTY
 
  # your token (a very BIG string)
- Token=JKHGHJGJHGKJHGKJHGkluhsdihdsriuhfwe87yr8wehIEWH9O78YWERF90HF9UHJESIPHJFV94Y4089734Y
+ Token=JKHG7yr8wehIEWH9O78YWERF90HF9UHJESIPHJFV94Y4089734Y
 
 =cut
 
@@ -95,14 +146,20 @@ sub new {
     return $self;
 }
 
-=head1 execute( $verb, $call_data )
-
-Calling this method will make build and execute the api request.
-
-  $verb      = call verb, i.e. GetSearchResults
-  $call_data = hashref of call_data that will be turned into xml.
+=head2 execute( $verb, $call_data )
 
   $call->execute( 'GetSearchResults', { Query => 'shoe' } );
+ 
+This method will construct the API request based on the $verb and
+the $call_data and then post the request to the web service endpoint. 
+
+=item $verb (required)
+
+call verb, i.e. GetSearchResults
+
+=item $call_data (required)
+
+hashref of call_data that will be turned into xml.
 
 =cut
 
@@ -131,7 +188,55 @@ sub execute {
 
 }
 
-=head1 _validate_response
+=head1 BASECLASS METHODS
+
+=head2 request_agent
+
+Accessor for the LWP::UserAgent request agent
+
+=head2 request_object
+
+Accessor for the HTTP::Request request object
+
+=head2 request_content
+
+Accessor for the complete request body from the HTTP::Request object
+
+=head2 response_content
+
+Accessor for the HTTP response body content
+
+=head2 response_object
+
+Accessor for the HTTP::Request response object
+
+=head2 response_dom
+
+Accessor for the LibXML response DOM
+
+=head2 response_hash
+
+Accessor for the hashified response content
+
+=head2 nodeContent( $tag, [ $dom ] ) 
+
+Helper for LibXML that retrieves node content
+
+=head2 errors 
+
+Accessor to the hashref of errors
+
+=head2 has_error
+
+Returns true if the call contains errors
+
+=head2 errors_as_string
+
+Returns a string of API errors if there are any.
+
+=head1 PRIVATE METHODS
+
+=head2 _validate_response
 
 This is called from the base class. The method is suppose to provide the
 custom validation code and push to the error stack if the response isn't
@@ -149,7 +254,7 @@ sub _validate_response {
     }
 }
 
-=head1 _get_request_body
+=head2 _get_request_body
 
 This method supplies the request body for the Shopping API call
 
@@ -183,7 +288,7 @@ sub _get_request_body {
     }
 }
 
-=head1 _get_request_headers
+=head2 _get_request_headers
 
 This method supplies the headers for the Shopping API call
 
@@ -206,7 +311,7 @@ sub _get_request_headers {
     return $obj;
 }
 
-=head1 _get_request_object
+=head2 _get_request_object
 
 This method creates the request object and returns to the parent class
 
@@ -383,7 +488,7 @@ sub _fish_ebay_ini {
 
 Tim Keefer <tim@timkeefer.com>
 
-=head2 CONTRIBUTOR
+=head1 CONTRIBUTORS
 
 Jyothi Krishnan
 

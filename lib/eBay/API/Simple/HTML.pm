@@ -13,12 +13,12 @@ our $DEBUG = 0;
 
 =head1 NAME 
 
-eBay::API::Simple::HTML
+eBay::API::Simple::HTML - Support for grabbing an HTML page via API call
 
-=head1 SYNPOSIS
+=head1 USAGE
 
   my $call = eBay::API::Simple::HTML->new();
-  $call->execute( 'http://www.timkeefer.com/blog/view/portfolio' );
+  $call->execute( 'http://en.wikipedia.org/wiki/Main_Page' );
 
   if ( $call->has_error() ) {
      die "Call Failed:" . $call->errors_as_string();
@@ -34,13 +34,12 @@ eBay::API::Simple::HTML
   foreach my $n ( @h2 ) {
     print $n->findvalue('text()') . "\n";
   }
-  
-=head1 new 
 
-Constructor for the HTML API call
+=head1 PUBLIC METHODS
+
+=head2 new( { %options } } 
 
   my $call = ebay::API::Simple::HTML->new();
-  $call->execute( 'http://www.timkeefer.com/blog/view/portfolio' );
 
 =cut 
 
@@ -51,12 +50,22 @@ sub new {
     return $self;    
 }
 
-=head1 execute( $url )
- 
-Calling this method will make build and execute the api request.
+=head2 execute( $url )
+
+  $call->execute( 'http://en.wikipedia.org/wiki/Main_Page' );
   
-  $url = page to fetch
-  $call->execute( 'http://www.timkeefer.com' );
+This method will construct the API request based on the $verb and
+the $call_data and then post the request to the web service endpoint. 
+
+=head3 Options
+
+=over 4
+
+=item $url (required)
+
+URL for page to fetch
+
+=back
 
 =cut 
 
@@ -80,7 +89,7 @@ sub execute {
 
 }
 
-=head1 response_hash
+=head2 response_hash
 
 Custom response_hash method, uses the output from LibXML to generate the 
 hash instead of the raw response body.
@@ -100,7 +109,7 @@ sub response_hash {
     return $self->{response_hash};
 }
 
-=head1 response_dom 
+=head2 response_dom 
 
 Custom response_dom method, provides a more relaxed parsing to better handle HTML.
 
@@ -127,9 +136,49 @@ sub response_dom {
     return $self->{response_dom};
 }
 
-=head1 _get_request_body
+=head1 BASECLASS METHODS
 
-This methods supplies an empty request body for the HTML API call
+=head2 request_agent
+
+Accessor for the LWP::UserAgent request agent
+
+=head2 request_object
+
+Accessor for the HTTP::Request request object
+
+=head2 request_content
+
+Accessor for the complete request body from the HTTP::Request object
+
+=head2 response_content
+
+Accessor for the HTTP response body content
+
+=head2 response_object
+
+Accessor for the HTTP::Request response object
+
+=head2 nodeContent( $tag, [ $dom ] ) 
+
+Helper for LibXML that retrieves node content
+
+=head2 errors 
+
+Accessor to the hashref of errors
+
+=head2 has_error
+
+Returns true if the call contains errors
+
+=head2 errors_as_string
+
+Returns a string of API errors if there are any.
+
+=head1 PRIVATE METHODS
+
+=head2 _get_request_body
+
+This method supplies the XML body for the web service request
 
 =cut
 
@@ -138,7 +187,7 @@ sub _get_request_body {
     return "";
 }
 
-=head1 _get_request_headers 
+=head2 _get_request_headers 
 
 This methods supplies the headers for the HTML API call
 
@@ -152,7 +201,7 @@ sub _get_request_headers {
     return '';
 }
 
-=head1 _get_request_object 
+=head2 _get_request_object 
 
 This method creates the request object and returns to the parent class
 

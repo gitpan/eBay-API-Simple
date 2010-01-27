@@ -13,11 +13,19 @@ our $DEBUG = 0;
 
 =head1 NAME
 
-eBay::API::Simple::Shopping
+eBay::API::Simple::Shopping - Support for eBay's Shopping web service
 
-=head1 SYNPOSIS
+=head1 DESCRIPTION
 
-  my $call = eBay::API::Simple::Shopping->new();
+This class provides support for eBay's Shopping web services.
+
+See http://developer.ebay.com/products/shopping/
+
+=head1 USAGE
+
+  my $call = eBay::API::Simple::Shopping->new( 
+    { appid => '<your app id here>' } 
+  );
   $call->execute( 'FindItemsAdvanced', { QueryKeywords => 'shoe' } );
 
   if ( $call->has_error() ) {
@@ -39,39 +47,66 @@ eBay::API::Simple::Shopping
     print $n->findvalue('Title/text()') . "\n";
   }
   
-=head1 new 
+=head1 PUBLIC METHODS
 
-Constructor for the Shopping API call
+=head2 new( { %options } } 
 
-  my $call = ebay::API::Simple::Shopping->new();
-  $call->execute( 'FindItems', { QueryKeywords => 'shoe' } );
+Constructor for the Finding API call
 
-  my $call = ebay::API::Simple::Shopping->new( {
-    siteid  => 0,         # custom site id 
-    uri     => '/shopping',  # custom uri 
-    appid   => 'myappid', # custom appid
-    version => '518',     # custom version
-    https   => 0,         # 0 or 1
-  } );
+    my $call = eBay::API::Simple::Shopping->new( { 
+      appid => '<your app id here>' 
+      ... 
+    } );
 
-  Defaults:
+=head3 Options
 
-    siteid  = 0
-    uri     = /shopping
-    domain  = open.api.ebay.com
-    version = 527
-    https   = 0
+=over 4
 
-    appid   = undef
-    
-=head2 ebay.ini
+=item appid (required)
+
+This appid is required by the web service. App ids can be obtained at 
+http://developer.ebay.com
+
+=item siteid
+
+eBay site id to be supplied to the web service endpoint
+
+defaults to 0
+
+=item domain
+
+domain for the web service endpoint
+
+defaults to open.api.ebay.com
+
+=item uri
+
+endpoint URI
+
+defaults to /shopping
+
+=item version
+
+Version to be supplied to the web service endpoint
+
+defaults to 527
+
+=item https
+
+Specifies is the API calls should be made over https.
+
+defaults to 0
+
+=back
+
+=head3 ALTERNATE CONFIG VIA ebay.ini
 
 The constructor will fallback to the ebay.ini file to get any missing 
 credentials. The following files will be checked, ./ebay.ini, ~/ebay.ini, 
 /etc/ebay.ini which are in the order of precedence.
 
-  # your application key
-  ApplicationKey=LJKGHKLJGKJHG
+    # your application key
+    ApplicationKey=LJKGHKLJGKJHG
 
 =cut
 
@@ -93,14 +128,20 @@ sub new {
     return $self;    
 }
 
-=head1 execute( $verb, $call_data )
- 
-Calling this method will make build and execute the api request.
-  
-  $verb      = call verb, i.e. FindItems 
-  $call_data = hashref of call_data that will be turned into xml.
+=head2 execute( $verb, $call_data )
 
-  $call->execute( 'FindItemsAdvanced', { QueryKeywords => 'shoe' } );
+  $self->execute( 'FindItemsAdvanced', { QueryKeywords => 'shoe' } );
+ 
+This method will construct the API request based on the $verb and
+the $call_data and then post the request to the web service endpoint. 
+
+=item $verb (required)
+
+call verb, i.e. FindItemsAdvanced
+
+=item $call_data (required)
+
+hashref of call_data that will be turned into xml.
 
 =cut
 
@@ -129,9 +170,57 @@ sub execute {
 
 }
 
-=head1 _get_request_body
+=head1 BASECLASS METHODS
 
-This method supplies the request body for the Shopping API call
+=head2 request_agent
+
+Accessor for the LWP::UserAgent request agent
+
+=head2 request_object
+
+Accessor for the HTTP::Request request object
+
+=head2 request_content
+
+Accessor for the complete request body from the HTTP::Request object
+
+=head2 response_content
+
+Accessor for the HTTP response body content
+
+=head2 response_object
+
+Accessor for the HTTP::Request response object
+
+=head2 response_dom
+
+Accessor for the LibXML response DOM
+
+=head2 response_hash
+
+Accessor for the hashified response content
+
+=head2 nodeContent( $tag, [ $dom ] ) 
+
+Helper for LibXML that retrieves node content
+
+=head2 errors 
+
+Accessor to the hashref of errors
+
+=head2 has_error
+
+Returns true if the call contains errors
+
+=head2 errors_as_string
+
+Returns a string of API errors if there are any.
+
+=head1 PRIVATE METHODS
+
+=head2 _get_request_body
+
+This method supplies the XML body for the web service request
 
 =cut
 
@@ -146,9 +235,9 @@ sub _get_request_body {
     return $xml; 
 }
 
-=head1 _get_request_headers 
+=head2 _get_request_headers 
 
-This method supplies the headers for the Shopping API call
+This method supplies the HTTP::Headers obj for the web service request
 
 =cut
 
@@ -168,9 +257,10 @@ sub _get_request_headers {
     return $obj;
 }
 
-=head1 _get_request_object 
+=head2 _get_request_object 
 
-This method creates the request object and returns to the parent class
+This method creates and returns the HTTP::Request object for the
+web service call.
 
 =cut
 

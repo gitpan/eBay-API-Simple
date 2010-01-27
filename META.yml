@@ -1,7 +1,7 @@
 --- #YAML:1.0
 name:               eBay-API-Simple
-version:            0.10
-abstract:           Simple version of the eBay API supporting all APIs
+version:            0.11
+abstract:           Flexible SDK supporting all eBay web services
 author:
     - Tim Keefer <tkeefer@gmail.com>
 license:            unknown

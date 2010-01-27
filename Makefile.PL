@@ -3,8 +3,8 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     NAME              => 'eBay::API::Simple',
-    #VERSION_FROM      => 'lib/eBay/API/Simple.pm',
-    VERSION           => '0.10',
+    VERSION_FROM      => 'lib/eBay/API/Simple.pm',
+    #VERSION           => '0.11',
     PREREQ_PM         => {
         'XML::LibXML'    => 0,
         'HTTP::Headers'  => 0,
@@ -14,7 +14,7 @@ WriteMakefile(
         'XML::Simple'    => 0,
     }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
-      (ABSTRACT_FROM  => 'lib/eBay/API/SimpleBase.pm', # retrieve abstract from module
+      (ABSTRACT_FROM  => 'lib/eBay/API/Simple.pm', # retrieve abstract from module
        AUTHOR         => 'Tim Keefer <tkeefer@gmail.com>') : ()),
 );
 

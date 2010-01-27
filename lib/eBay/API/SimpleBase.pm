@@ -10,6 +10,8 @@ use HTTP::Headers;
 use LWP::UserAgent;
 use XML::Parser;
 
+use base 'eBay::API::Simple';
+
 # set the preferred xml simple parser
 $XML::Simple::PREFERRED_PARSER = 'XML::Parser';
 
@@ -17,27 +19,43 @@ our $DEBUG = 0;
 
 =head1 NAME 
 
-eBay::API::Simple - Simple version of the eBay API supporting all APIs
+eBay::API::SimpleBase - Flexible SDK supporting all eBay web services
 
 =head1 DESCRIPTION
 
-This is the base class for the eBay::API::Simple::* libraries. 
+This is the base class for the eBay::API::Simple::* libraries that provide
+support for all of eBay's web services. This base class does nothing by itself
+and must be subclassed to provide the complete web service support. 
 
-L<eBay::API::Simple::Finding>
-L<eBay::API::Simple::Shopping>
-L<eBay::API::Simple::Trading>
-L<eBay::API::Simple::HTML>
-L<eBay::API::Simple::RSS>
+=item L<eBay::API::Simple::Finding>
 
-=head1 SOURCE
+=item L<eBay::API::Simple::Shopping>
+
+=item L<eBay::API::Simple::Trading>
+
+=item L<eBay::API::Simple::HTML>
+
+=item L<eBay::API::Simple::RSS>
+
+=head1 GET THE SOURCE
 
 http://code.google.com/p/ebay-api-simple
 
-=head1 METHODS
+=head1 PUBLIC METHODS
 
 =head2 eBay::API::Simple::{subclass}->new()
 
 see subclass for more docs.
+
+=item L<eBay::API::Simple::Finding>
+
+=item L<eBay::API::Simple::Shopping>
+
+=item L<eBay::API::Simple::Trading>
+
+=item L<eBay::API::Simple::HTML>
+
+=item L<eBay::API::Simple::RSS>
 
 =cut
 
@@ -58,17 +76,21 @@ sub new {
     return $self;   
 }
 
-=head1 execute( $verb, $call_data )
+=head2 execute( $verb, $call_data )
 
-** This method should be supplied by the subclass. This one
+This method should be supplied by the subclass. This one
 is only here to provide an example. See actual subclass for docs.
 
 Calling this method will make build and execute the api request.
-  
-required:
-    $verb      = call verb, i.e. FindItems 
-    $call_data = hashref of call_data that will be turned
-                 into xml.
+
+=item $verb (required)
+
+call verb, i.e. FindItems 
+
+=item $call_data (required)
+
+hashref of call_data that will be turned into xml.
+
 =cut
 
 sub execute {
@@ -93,7 +115,40 @@ sub execute {
 
 }
 
-=head1 response_content
+=head2 request_agent
+
+Accessor for the LWP::UserAgent request agent
+
+=cut
+
+sub request_agent {
+    my $self = shift;
+    return $self->{request_agent};
+}
+
+=head2 request_object
+
+Accessor for the HTTP::Request request object
+
+=cut
+
+sub request_object {
+    my $self = shift;
+    return $self->{request_object};
+}
+
+=head2 request_content
+
+Accessor for the complete request body from the HTTP::Request object
+
+=cut
+
+sub request_content {
+    my $self = shift;
+    return $self->{request_object}->as_string();
+} 
+
+=head2 response_content
 
 Accessor for the HTTP response body content
 
@@ -104,42 +159,9 @@ sub response_content {
     return $self->{response_content};
 }
 
-=head1 request_agent
+=head2 response_object
 
-Accessor for the HTTP request agent
-
-=cut
-
-sub request_agent {
-    my $self = shift;
-    return $self->{request_agent};
-}
-
-=head1 request_object
-
-Accessor for the HTTP request object
-
-=cut
-
-sub request_object {
-    my $self = shift;
-    return $self->{request_object};
-} 
-
-=head1 request_content
-
-Accessor for the HTTP request body content
-
-=cut
-
-sub request_content {
-    my $self = shift;
-    return $self->{request_object}->as_string();
-} 
-
-=head1 response_object
-
-Accessor for the HTTP response body content
+Accessor for the HTTP::Request response object
 
 =cut
 
@@ -148,7 +170,7 @@ sub response_object {
     return $self->{response_object};
 }
 
-=head1 response_dom
+=head2 response_dom
 
 Accessor for the LibXML response DOM
 
@@ -166,13 +188,12 @@ sub response_dom {
         if ( $@ ) {
             $self->errors_append( { 'parsing_error' => $@ } );
         }
-
     }
 
     return $self->{response_dom};
 }
 
-=head1 response_hash
+=head2 response_hash
 
 Accessor for the hashified response content
 
@@ -191,7 +212,7 @@ sub response_hash {
     return $self->{response_hash};
 }
 
-=head1 response_json
+=head2 response_json
 
 Not implemented yet.
 
@@ -207,96 +228,15 @@ sub response_json {
     return $self->{response_json};
 }
 
-=head1 api_config
-
-Accessor to a hashref of api config data that will be used to execute
-the api call.
-
-  siteid,domain,uri,etc.
-
-=cut
-
-sub api_config {
-    my $self = shift;
-    $self->{api_config} = {} unless defined $self->{api_config};
-    return $self->{api_config};
-}
-
-=head1 api_config_append( $hashref )
-
-This method is used to merge config into the config_api hash
-
-=cut
-
-sub api_config_append {
-    my $self = shift;
-    my $config_hash = shift;
-
-    for my $k ( keys %{ $config_hash } ) {
-        $self->api_config->{$k} = $config_hash->{$k};
-    }
-}
-
-=head1 errors 
-
-Accessor to the hashref of errors
-
-=cut
-
-sub errors {
-    my $self = shift;
-    $self->{errors} = {} unless defined $self->{errors};
-    return $self->{errors};
-}
-
-=head1 has_error
-
-Returns true if the call contains errors
-
-=cut
-
-sub has_error {
-    my $self = shift;
-    my $has_error =  (keys( %{ $self->errors } ) > 0) ? 1 : 0;
-    return $has_error;
-}
-
-=head1 errors_append
-
-This method lets you append errors to the errors stack
-
-=cut
-
-sub errors_append {
-    my $self = shift;
-    my $hashref = shift;
-
-    for my $k ( keys %{ $hashref } ) {
-        $self->errors->{$k} = $hashref->{$k};
-    }
-
-}
-
-=head1 errors_as_string
-
-Returns a string of API errors if there are any.
-
-=cut
-
-sub errors_as_string {
-    my $self = shift;
-
-    my @e;
-    for my $k ( keys %{ $self->errors } ) {
-        push( @e, $k . '-' . $self->errors->{$k} );
-    }
-    
-    return join( "\n", @e );
-}
-
-=head1 nodeContent( $tag, [ $dom ] ) 
+=head2 nodeContent( $tag, [ $dom ] ) 
 
 Helper for LibXML that retrieves node content
+
+=item $tag (required)
+
+This is the name of the xml element
+
+=item $dom (optional)
 
 optionally a DOM object can be passed in. If no DOM object 
 is passed then the main response DOM object is used.
@@ -323,7 +263,98 @@ sub nodeContent {
     }
 }
 
-=head1 _execute_http_request
+=head2 errors 
+
+Accessor to the hashref of errors
+
+=cut
+
+sub errors {
+    my $self = shift;
+    $self->{errors} = {} unless defined $self->{errors};
+    return $self->{errors};
+}
+
+=head2 has_error
+
+Returns true if the call contains errors
+
+=cut
+
+sub has_error {
+    my $self = shift;
+    my $has_error =  (keys( %{ $self->errors } ) > 0) ? 1 : 0;
+    return $has_error;
+}
+
+=head2 errors_as_string
+
+Returns a string of API errors if there are any.
+
+=cut
+
+sub errors_as_string {
+    my $self = shift;
+
+    my @e;
+    for my $k ( keys %{ $self->errors } ) {
+        push( @e, $k . '-' . $self->errors->{$k} );
+    }
+    
+    return join( "\n", @e );
+}
+
+=head1 INTERNAL METHODS
+
+=head2 api_config
+
+Accessor to a hashref of api config data that will be used to execute
+the api call.
+
+  siteid,domain,uri,etc.
+
+=cut
+
+sub api_config {
+    my $self = shift;
+    $self->{api_config} = {} unless defined $self->{api_config};
+    return $self->{api_config};
+}
+
+=head2 api_config_append( $hashref )
+
+This method is used to merge config into the config_api hash
+
+=cut
+
+sub api_config_append {
+    my $self = shift;
+    my $config_hash = shift;
+
+    for my $k ( keys %{ $config_hash } ) {
+        $self->api_config->{$k} = $config_hash->{$k};
+    }
+}
+
+=head2 errors_append
+
+This method lets you append errors to the errors stack
+
+=cut
+
+sub errors_append {
+    my $self = shift;
+    my $hashref = shift;
+
+    for my $k ( keys %{ $hashref } ) {
+        $self->errors->{$k} = $hashref->{$k};
+    }
+
+}
+
+=head1 PRIVATE METHODS
+
+=head2 _execute_http_request
 
 This method performs the http request and should be used by 
 each subclass.
@@ -380,7 +411,7 @@ sub _execute_http_request {
     return $content;
 }
 
-=head1 _reset
+=head2 _reset
 
 Upon execute() we need to undef any data from a previous call. This
 method will clear all call data and is usually done before each execute
@@ -402,7 +433,7 @@ sub _reset {
 
 }
 
-=head1 _get_request_body
+=head2 _get_request_body
 
 The request body should be provided by the subclass
 
@@ -416,7 +447,7 @@ sub _get_request_body {
     return $xml; 
 }
 
-=head1 _get_request_headers 
+=head2 _get_request_headers 
 
 The request headers should be provided by the subclass
 
@@ -432,7 +463,7 @@ sub _get_request_headers {
     return $obj;
 }
 
-=head1 _get_request_agent
+=head2 _get_request_agent
 
 The request request agent should be used by all subclasses
 
@@ -465,7 +496,7 @@ sub _get_request_agent {
     return $ua;
 }
 
-=head1 _get_request_object
+=head2 _get_request_object
 
 The request object should be provided by the subclass
 

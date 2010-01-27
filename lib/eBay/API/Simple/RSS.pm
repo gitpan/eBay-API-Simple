@@ -13,9 +13,9 @@ our $DEBUG = 0;
 
 =head1 NAME 
 
-eBay::API::Simple::RSS
+eBay::API::Simple::RSS - Support for grabbing an RSS feed via API call
 
-=head1 SYNPOSIS
+=head1 USAGE
 
   my $call = eBay::API::Simple::RSS->new();
   $call->execute(
@@ -37,16 +37,13 @@ eBay::API::Simple::RSS
     print $n->findvalue('title/text()') . "\n";
   }
   
-=head1 new 
+=head1 PUBLIC METHODS
 
-Constructor for the RSS API call
+=head2 new( { %options } } 
 
-  my $call = ebay::API::Simple::RSS->new();
-  $call->execute(
-    'http://sfbay.craigslist.org/search/sss?query=shirt&format=rss'
-  );
+my $call = ebay::API::Simple::RSS->new();
 
-=cut 
+=cut
 
 sub new {
     my $class = shift;
@@ -55,17 +52,25 @@ sub new {
     return $self;    
 }
 
-=head1 execute( $feed_url )
- 
-Calling this method will make build and execute the api request.
-  
-  $url = feed to fetch
+=head2 execute( $url )
+
   $call->execute( 
     'http://sfbay.craigslist.org/search/sss?query=shirt&format=rss' 
   );
+  
+This method will construct the API request the supplied URL. 
 
-=cut 
+=head3 Options
 
+=over 4
+
+=item $url (required)
+
+Feed URL to fetch
+
+=back
+
+=cut
 sub execute {
     my $self = shift;
     
@@ -86,9 +91,57 @@ sub execute {
 
 }
 
-=head1 _get_request_body
+=head1 BASECLASS METHODS
 
-This methods supplies an empty request body for the RSS API call
+=head2 request_agent
+
+Accessor for the LWP::UserAgent request agent
+
+=head2 request_object
+
+Accessor for the HTTP::Request request object
+
+=head2 request_content
+
+Accessor for the complete request body from the HTTP::Request object
+
+=head2 response_content
+
+Accessor for the HTTP response body content
+
+=head2 response_object
+
+Accessor for the HTTP::Request response object
+
+=head2 response_dom
+
+Accessor for the LibXML response DOM
+
+=head2 response_hash
+
+Accessor for the hashified response content
+
+=head2 nodeContent( $tag, [ $dom ] ) 
+
+Helper for LibXML that retrieves node content
+
+=head2 errors 
+
+Accessor to the hashref of errors
+
+=head2 has_error
+
+Returns true if the call contains errors
+
+=head2 errors_as_string
+
+Returns a string of API errors if there are any.
+
+=head1 PRIVATE METHODS
+
+=head2 _get_request_body
+
+This method supplies the XML body for the web service request
 
 =cut
 
@@ -97,7 +150,7 @@ sub _get_request_body {
     return "";
 }
 
-=head1 _get_request_headers 
+=head2 _get_request_headers 
 
 This methods supplies the headers for the RSS API call
 
@@ -111,7 +164,7 @@ sub _get_request_headers {
     return '';
 }
 
-=head1 _get_request_object 
+=head2 _get_request_object 
 
 This method creates the request object and returns to the parent class
 
