@@ -1,6 +1,6 @@
 package eBay::API::Simple;
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 =head1 NAME 
 
@@ -15,6 +15,8 @@ and must be subclassed to provide the complete web service support.
 See base class for complete docs, L<eBay::API::SimpleBase>
 
 =item L<eBay::API::SimpleBase>
+
+=item L<eBay::API::Simple::Merchandising>
 
 =item L<eBay::API::Simple::Finding>
 
@@ -37,6 +39,8 @@ http://code.google.com/p/ebay-api-simple
 see subclass for more docs.
 
 =item L<eBay::API::SimpleBase>
+
+=item L<eBay::API::Simple::Merchandising>
 
 =item L<eBay::API::Simple::Finding>
 

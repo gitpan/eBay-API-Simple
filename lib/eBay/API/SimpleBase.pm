@@ -27,6 +27,8 @@ This is the base class for the eBay::API::Simple::* libraries that provide
 support for all of eBay's web services. This base class does nothing by itself
 and must be subclassed to provide the complete web service support. 
 
+=item L<eBay::API::Simple::Merchandising>
+
 =item L<eBay::API::Simple::Finding>
 
 =item L<eBay::API::Simple::Shopping>
@@ -46,6 +48,8 @@ http://code.google.com/p/ebay-api-simple
 =head2 eBay::API::Simple::{subclass}->new()
 
 see subclass for more docs.
+
+=item L<eBay::API::Simple::Merchandising>
 
 =item L<eBay::API::Simple::Finding>
 
@@ -476,7 +480,7 @@ sub _get_request_agent {
 
     $ua->agent( sprintf( '%s / eBay API Simple (Version: %s)',
         $ua->agent,
-        $eBay::API::SimpleBase::VERSION,
+        $eBay::API::Simple::VERSION,
     ) );
 
     # timeout in seconds
