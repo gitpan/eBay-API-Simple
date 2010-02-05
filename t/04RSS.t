@@ -25,7 +25,8 @@ BEGIN {
 my $call = eBay::API::Simple::RSS->new();
 
 $call->execute(
-    'http://sfbay.craigslist.org/sss/index.rss'
+    'http://sfbay.craigslist.org/sss/index.rss',
+    { page => 1 },
 );
 
 if ( $call->has_error() ) {
@@ -36,7 +37,7 @@ else {
     is( ref $call->response_hash(), 'HASH', 'response hash' );
 
     ok( $call->nodeContent('title') ne '', 'nodeContent test' );
-    # diag Dumper( $call->response_hash );
+    #diag Dumper( $call->response_hash );
 }
 
 $call->execute( 'http://bogusurlexample.com' );
@@ -45,4 +46,16 @@ is( $call->has_error(), 1, 'look for error flag' );
 ok( $call->errors_as_string() ne '', 'check for error message' );
 ok( $call->response_content() ne '', 'check for response content' );
 
+my $call2 = eBay::API::Simple::RSS->new(
+    { request_method => 'POST' }
+);
+
+$call2->execute(
+    'http://sfbay.craigslist.org/sss/index.rss',
+    { page => 1 },
+);
+
+is( ref $call2->response_dom(), 'XML::LibXML::Document', 'post response dom' );
+is( ref $call2->response_hash(), 'HASH', 'post response hash' );
+ok( $call2->nodeContent('title') ne '', 'post nodeContent test' );
 

@@ -31,7 +31,7 @@ my $call;
 eval {
 
     $call = eBay::API::Simple::Merchandising->new(
-        { appid => undef } # <----- your appid here
+        { appid => undef, } # <----- your appid here
     );
 
 };
@@ -44,7 +44,7 @@ SKIP: {
     skip join("\n", @skip_msg), 1 if scalar(@skip_msg);
    
     $call->execute(
-        'getMostWatchedItems', { maxResults => 3, categoryId => 267 } 
+        'getMostWatchedItems', { maxResults => 1, categoryId => 267 } 
     );
 
     #diag $call->request_content;
@@ -71,7 +71,10 @@ SKIP: {
     ok( $call->errors_as_string() ne '', 'check for error message' );
     ok( $call->response_content() ne '', 'check for response content' );
 
-    $call->execute( 'getMostWatchedItems', { maxResults => 3, categoryId => 267 } );
+    $call->execute( 'getSimilarItems', { itemId => 270358046257 } );
+
+    #diag $call->request_content;
+    #diag $call->response_content;
 
     is( $call->has_error(), 0, 'error check' );
     is( $call->errors_as_string(), '', 'error string check' );

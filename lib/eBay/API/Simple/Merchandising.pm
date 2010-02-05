@@ -117,7 +117,7 @@ sub new {
 
     $self->api_config->{domain}  ||= 'svcs.ebay.com';
     $self->api_config->{uri}     ||= '/MerchandisingService';
-    $self->api_config->{version} ||= '1.0.0';
+    #$self->api_config->{version} ||= '1.1.0';
     $self->api_config->{https}   ||= 0;
     $self->api_config->{siteid}  ||= 'EBAY-US';
     $self->api_config->{response_encoding} ||= 'XML'; # JSON, NV, SOAP
@@ -159,9 +159,6 @@ sub execute {
     $self->_load_credentials();
     
     $self->{response_content} = $self->_execute_http_request();
-
-    # remove xmlns 
-    $self->{response_content}  =~ s/xmlns=["'][^"']+["']//;
 
     if ( $DEBUG ) {
         require Data::Dumper;
@@ -228,7 +225,7 @@ sub _get_request_body {
     my $self = shift;
 
     my $xml = "<?xml version='1.0' encoding='utf-8'?>"
-        . "<" . $self->{verb} . "Request xmlns=\"http://www.ebay.com/marketplace/search/v1/services\">"
+        . "<" . $self->{verb} . "Request xmlns=\"http://www.ebay.com/marketplace/services\">"
         . XMLout( $self->{call_data}, NoAttr => 1, KeepRoot => 1, RootName => undef )
         . "</" . $self->{verb} . "Request>";
 
@@ -246,12 +243,18 @@ sub _get_request_headers {
    
     my $obj = HTTP::Headers->new();
 
-    $obj->push_header("X-EBAY-SOA-SERVICE-VERSION" => $self->api_config->{version});
+    if ( defined $self->api_config->{version} ) {
+        $obj->push_header("X-EBAY-SOA-SERVICE-VERSION" 
+            => $self->api_config->{version});
+    }
+    $obj->push_header("X-EBAY-SOA-SERVICE-NAME" => "MerchandisingService" );
     $obj->push_header("EBAY-SOA-CONSUMER-ID"  => $self->api_config->{appid});
     $obj->push_header("X-EBAY-SOA-GLOBAL-ID"  => $self->api_config->{siteid});
     $obj->push_header("X-EBAY-SOA-OPERATION-NAME" => $self->{verb});
-    $obj->push_header("X-EBAY-SOA-REQUEST-DATA-FORMAT"  => $self->api_config->{request_encoding});
-    $obj->push_header("X-EBAY-SOA-RESPONSE-DATA-FORMAT" => $self->api_config->{response_encoding});
+    $obj->push_header("X-EBAY-SOA-REQUEST-DATA-FORMAT"  
+        => $self->api_config->{request_encoding});
+    $obj->push_header("X-EBAY-SOA-RESPONSE-DATA-FORMAT" 
+        => $self->api_config->{response_encoding});
     $obj->push_header("Content-Type" => "text/xml");
     
     return $obj;

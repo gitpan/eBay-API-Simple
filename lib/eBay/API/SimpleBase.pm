@@ -9,6 +9,7 @@ use HTTP::Request;
 use HTTP::Headers;
 use LWP::UserAgent;
 use XML::Parser;
+use URI::Escape;
 
 use base 'eBay::API::Simple';
 
@@ -73,6 +74,10 @@ sub new {
     # set some defaults 
     $self->api_config->{siteid}  = 0;
     $self->api_config->{timeout} = 20 unless defined $api_args->{timeout};
+    unless (defined $api_args->{preserve_namespace}) {
+        $self->api_config->{preserve_namespace} = 0;
+    }
+    
 
     # set the config args 
     $self->api_config_append( $api_args );
@@ -395,6 +400,12 @@ sub _execute_http_request {
 
         if ( $response->is_success ) {
             $content   = $response->content();
+            
+            unless ($self->api_config->{preserve_namespace}) {
+                # strip out the namespace param, with single or double quotes
+                $content =~ s/xmlns=("[^"]+"|'[^']+') *//;
+            }
+            
             $self->{response_content} = $content;
             $error     = undef;
             
@@ -435,6 +446,25 @@ sub _reset {
     $self->{response_json}     = undef;
     $self->{response_hash}     = undef;
 
+}
+
+=head2 _build_url( $base_url, $%params )
+
+Constructs a URL based on the supplied args
+
+=cut
+
+sub _build_url {
+    my $self = shift;
+    my $base = shift;
+    my $args = shift;
+
+    my @p;
+    for my $k ( keys %{ $args } ) {
+        push( @p, ( $k . '=' . uri_escape( $args->{$k} ) ) );
+    }
+
+    return( scalar( @p ) > 0 ? $base . '?' . join('&', @p) : $base );
 }
 
 =head2 _get_request_body
@@ -530,5 +560,9 @@ sub _get_request_object {
 =head1 AUTHOR
 
 Tim Keefer <tim@timkeefer.com>
+
+=head1 CONTRIBUTOR
+
+Andrew Dittes <adittes@gmail.com>
 
 =cut

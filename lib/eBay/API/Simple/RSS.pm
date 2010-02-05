@@ -8,6 +8,7 @@ use base 'eBay::API::SimpleBase';
 use HTTP::Request;
 use HTTP::Headers;
 use XML::Simple;
+use URI::Escape;
 
 our $DEBUG = 0;
 
@@ -19,7 +20,11 @@ eBay::API::Simple::RSS - Support for grabbing an RSS feed via API call
 
   my $call = eBay::API::Simple::RSS->new();
   $call->execute(
-    'http://sfbay.craigslist.org/search/sss?query=shirt&format=rss'
+    'http://sfbay.craigslist.org/search/sss',
+    {
+        query  => 'shirt',
+        format => 'rss',
+    }
   );
 
   if ( $call->has_error() ) {
@@ -49,13 +54,16 @@ sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
 
+    $self->api_config->{request_method}  ||= 'GET';
+
     return $self;    
 }
 
-=head2 execute( $url )
+=head2 execute( $url, $%args )
 
   $call->execute( 
-    'http://sfbay.craigslist.org/search/sss?query=shirt&format=rss' 
+    'http://sfbay.craigslist.org/search/sss',
+    { query  => 'shirt', format => 'rss', } 
   );
   
 This method will construct the API request the supplied URL. 
@@ -67,6 +75,10 @@ This method will construct the API request the supplied URL.
 =item $url (required)
 
 Feed URL to fetch
+
+=item %$args (optional)
+
+The supplied args will be encoded and appended to the URL
 
 =back
 
@@ -80,10 +92,9 @@ sub execute {
         die "missing url";
     }
     
+    # collect the optional args
+    $self->{args} = shift;
     $self->{response_content} = $self->_execute_http_request();
-
-    # remove xmlns 
-    $self->{response_content}  =~ s/xmlns=["'][^"']+"//;
 
     if ( $DEBUG ) {
         print STDERR $self->{response_content};
@@ -147,7 +158,15 @@ This method supplies the XML body for the web service request
 
 sub _get_request_body {
     my $self = shift;
-    return "";
+    my @p;
+    
+    if ( $self->api_config->{request_method} ne 'GET' ) {
+        for my $k ( keys %{ $self->{args} } ) {
+            push( @p, ( $k . '=' . uri_escape( $self->{args}{$k} ) ) );
+        }
+    }
+    
+    return join( '&', @p ) or "";
 }
 
 =head2 _get_request_headers 
@@ -159,9 +178,8 @@ This methods supplies the headers for the RSS API call
 sub _get_request_headers {
     my $self = shift;
    
-    #my $obj = HTTP::Headers->new();
-    #return $obj;
-    return '';
+    my $obj = HTTP::Headers->new();
+    return $obj;
 }
 
 =head2 _get_request_object 
@@ -171,15 +189,30 @@ This method creates the request object and returns to the parent class
 =cut
 
 sub _get_request_object {
-    my $self = shift;
-
+    my $self     = shift;
+    
+    my $req_url  = undef;
+    
+    # put the args in the url for a GET request only
+    if ( $self->api_config->{request_method} eq 'GET'
+        && defined $self->{args} ) {
+        
+        $req_url = $self->_build_url( $self->{url}, $self->{args} );
+    }
+    else {
+        $req_url = $self->{url}; 
+    }
+    
     my $request_obj = HTTP::Request->new(
-        "GET",
-        $self->{url},
+        ( $self->api_config->{request_method} || 'GET' ),
+        $req_url,
+        $self->_get_request_headers,
+        $self->_get_request_body,
     );
 
     return $request_obj;
 }
+
 
 1;
 

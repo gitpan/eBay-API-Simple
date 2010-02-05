@@ -4,7 +4,6 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME              => 'eBay::API::Simple',
     VERSION_FROM      => 'lib/eBay/API/Simple.pm',
-    #VERSION           => '0.11',
     PREREQ_PM         => {
         'XML::LibXML'    => 0,
         'HTTP::Headers'  => 0,
@@ -12,9 +11,10 @@ WriteMakefile(
         'LWP::UserAgent' => 0,
         'XML::Parser'    => 0,
         'XML::Simple'    => 0,
+        'URI::Escape'    => 0,
     }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
-      (ABSTRACT_FROM  => 'lib/eBay/API/Simple.pm', # retrieve abstract from module
+      (ABSTRACT_FROM  => 'lib/eBay/API/Simple.pm', #abstract from module
        AUTHOR         => 'Tim Keefer <tkeefer@gmail.com>') : ()),
 );
 

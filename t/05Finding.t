@@ -43,9 +43,10 @@ if ( $@ ) {
 SKIP: {
     skip join("\n", @skip_msg), 1 if scalar(@skip_msg);
    
-    $call->execute( 'findItemsByKeywords', 
-        { keywords => 'black shoes' } 
-    );
+    $call->execute( 'findItemsByKeywords', { 
+        keywords => 'black shoes', 
+        paginationInput => { entriesPerPage => 15 } 
+    } );
 
     #diag $call->request_content;
     #diag $call->response_content;
@@ -56,15 +57,15 @@ SKIP: {
     else {
         is( ref $call->response_dom(), 'XML::LibXML::Document', 'response dom' );
         is( ref $call->response_hash(), 'HASH', 'response hash' );
-
+        
         like( $call->nodeContent('timestamp'), 
             qr/^\d{4}-\d{2}-\d{2}/, 
             'response timestamp' 
         );
     
         ok( $call->nodeContent('totalEntries') > 10, 'response total entries' );
-         diag( 'total entries: ' . $call->nodeContent('totalEntries') );
-    #    diag( Dumper( $call->response_hash() ) );
+        #diag( 'total entries: ' . $call->nodeContent('totalEntries') );
+        #diag( Dumper( $call->response_hash() ) );
     }
 
     $call->execute( 'BadCall', { keywords => 'shoe' } );

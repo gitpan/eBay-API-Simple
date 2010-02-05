@@ -24,7 +24,10 @@ BEGIN {
 
 my $call = eBay::API::Simple::HTML->new();
 
-$call->execute( 'http://www.timkeefer.com/?utm_campaign=simple_test' );
+$call->execute( 'http://www.timkeefer.com/', { utm_campaign =>'simple_test' } );
+
+#diag $call->request_content();
+#diag $call->response_content();
 
 if ( $call->has_error() ) {
     fail( 'api call failed: ' . $call->errors_as_string() );
@@ -38,7 +41,8 @@ else {
         'hash test' 
     );
     
-    ok( $call->nodeContent('title') eq 'Tim Keefer | timkeefer.com ', 'nodeContent test' );
+    ok( $call->nodeContent('title') eq 'Tim Keefer | timkeefer.com ', 
+        'nodeContent test' );
     #diag Dumper( $call->response_hash );
 }
 

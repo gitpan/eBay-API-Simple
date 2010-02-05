@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               eBay-API-Simple
-version:            0.12
+version:            0.13
 abstract:           Flexible SDK supporting all eBay web services
 author:
     - Tim Keefer <tkeefer@gmail.com>
@@ -14,6 +14,7 @@ requires:
     HTTP::Headers:   0
     HTTP::Request:   0
     LWP::UserAgent:  0
+    URI::Escape:     0
     XML::LibXML:     0
     XML::Parser:     0
     XML::Simple:     0

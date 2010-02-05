@@ -49,9 +49,11 @@ eval {
 SKIP: {
     skip join( ' ', @skip_msg), 1 if scalar( @skip_msg );
 
-    $call->execute( 'FindItems', 
-        { QueryKeywords => 'black shoes', MaxEntries => 10 } 
-    );
+    $call->execute( 'FindItemsAdvanced', { 
+        QueryKeywords => 'black shoes', 
+        MaxEntries => 5,
+        Condition => 'Used',
+    } );
 
     #diag $call->request_content;
     #diag $call->response_content;
@@ -69,8 +71,8 @@ SKIP: {
         );
     
         ok( $call->nodeContent('TotalItems') > 10, 'response total items' );
-         diag( 'total items: ' . $call->nodeContent('TotalItems') );
-    #    diag( Dumper( $call->response_hash() ) );
+        #diag( 'total items: ' . $call->nodeContent('TotalItems') );
+        #diag( Dumper( $call->response_hash() ) );
     }
 
     $call->execute( 'BadCall', { QueryKeywords => 'shoe' } );

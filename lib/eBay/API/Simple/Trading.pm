@@ -178,9 +178,6 @@ sub execute {
 
     $self->{response_content} = $self->_execute_http_request();
 
-    # remove xmlns
-    $self->{response_content}  =~ s/xmlns=["'][^"']+"//;
-
     if ( $DEBUG ) {
         print STDERR $self->request_object->as_string();
         print STDERR $self->response_object->as_string();
