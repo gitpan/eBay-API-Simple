@@ -273,15 +273,21 @@ sub _get_request_body {
           return $xml;
     }
     else {
-         my $xml = "<?xml version='1.0' encoding='utf-8'?>"
+        my $xml = "<?xml version='1.0' encoding='utf-8'?>"
              . "<" . $self->{verb} . "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
              . "<RequesterCredentials><Username>"
-             . $self->api_config->{username} . "</Username><Password>"
-             . $self->api_config->{password} . "</Password></RequesterCredentials>"
+             . $self->api_config->{username} . "</Username>";
+        
+        if ( $self->api_config->{password} ) {
+            $xml .= "<Password>"
+             . $self->api_config->{password} . "</Password>";
+        }
+        
+        $xml .= "</RequesterCredentials>"
              . XMLout( $self->{call_data}, NoAttr => 1, KeepRoot => 1, RootName => undef )
              . "</" . $self->{verb} . "Request>";
 
-         return $xml;
+        return $xml;
     }
 }
 
@@ -369,7 +375,7 @@ sub _load_credentials {
            $self->api_config->{$optional} = $val;
        }
        else {
-           print "Not defined : " . $optional . "\n" if $DEBUG;
+           print STDERR "Not defined : " . $optional . "\n" if $DEBUG;
        }
     }
 
@@ -386,6 +392,9 @@ sub _load_credentials {
         $self->{auth_method} = 'user';
 
     }
+    elsif ( exists( $self->api_config->{username} ) ) {
+        $self->{auth_method} = 'user';        
+    }
     else {
         die "missing Authentication : token or username/password \n";
     }
@@ -401,7 +410,7 @@ sub _load_credentials {
 
     unless ( defined $self->api_config->{https} ) {
         $self->api_config->{https} = 1;
-        print "since undefined https value is now: "
+        print STDERR "since undefined https value is now: "
             . $self->api_config->{https} . "\n" if $DEBUG;
     }
 

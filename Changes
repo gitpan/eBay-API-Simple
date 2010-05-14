@@ -2,6 +2,11 @@
 
 TODO: add ClientAlerts and BestMatch backend
 
+0.14
+- modify debugging
+- modify Trading backend: calls can now be made without a password 
+  since it's not required for a fetch token call.
+
 0.13 Fri Feb  5 13:28:31 PST 2010
 - add query string arg support for RSS and HTML backends
 - fixed XML namespace stripping (now done in base class with optional override)
