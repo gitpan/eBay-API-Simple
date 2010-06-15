@@ -46,6 +46,23 @@ See http://developer.ebay.com/products/shopping/
   foreach my $n ( @nodes ) {
     print $n->findvalue('Title/text()') . "\n";
   }
+
+=head1 SANDBOX USAGE
+
+  my $call = eBay::API::Simple::Shopping->new( { 
+     appid => '<your app id here>',
+     domain => 'open.api.sandbox.ebay.com',   
+  } );
+  
+  $call->execute( 'FindItemsAdvanced', { QueryKeywords => 'shoe' } );
+
+  if ( $call->has_error() ) {
+     die "Call Failed:" . $call->errors_as_string();
+  }
+
+  # getters for the response DOM or Hash
+  my $dom  = $call->response_dom();
+  my $hash = $call->response_hash();
   
 =head1 PUBLIC METHODS
 

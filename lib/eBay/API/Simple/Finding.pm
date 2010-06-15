@@ -48,6 +48,23 @@ See http://developer.ebay.com/products/finding/
     print $n->findvalue('title/text()') . "\n";
   }
 
+=head1 SANDBOX USAGE
+
+  my $call = eBay::API::Simple::Finding->new( { 
+    appid => '<your app id here>',
+    domain => 'svcs.sandbox.ebay.com',
+  } );
+  
+  $call->execute( 'findItemsByKeywords', { keywords => 'shoe' } );
+
+  if ( $call->has_error() ) {
+     die "Call Failed:" . $call->errors_as_string();
+  }
+
+  # getters for the response DOM or Hash
+  my $dom  = $call->response_dom();
+  my $hash = $call->response_hash();
+
 =head1 PUBLIC METHODS
 
 =head2 new( { %options } } 
@@ -79,6 +96,12 @@ defaults to EBAY-US
 domain for the web service endpoint
 
 defaults to svcs.ebay.com
+
+=item service
+
+SOA Service name 
+
+defaults to FindingService
 
 =item uri
 
@@ -115,6 +138,7 @@ sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
 
+    $self->api_config->{service}  ||= 'FindingService';
     $self->api_config->{domain}  ||= 'svcs.ebay.com';
     $self->api_config->{uri}     ||= '/services/search/FindingService/v1';
     $self->api_config->{version} ||= '1.0.0';
@@ -242,7 +266,8 @@ sub _get_request_headers {
     my $self = shift;
    
     my $obj = HTTP::Headers->new();
-
+    
+    $obj->push_header("X-EBAY-SOA-SERVICE-NAME" => $self->api_config->{service});
     $obj->push_header("X-EBAY-SOA-SERVICE-VERSION" => $self->api_config->{version});
     $obj->push_header("X-EBAY-SOA-SECURITY-APPNAME"  => $self->api_config->{appid});
     $obj->push_header("X-EBAY-SOA-GLOBAL-ID"  => $self->api_config->{siteid});

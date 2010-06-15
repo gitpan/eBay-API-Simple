@@ -50,6 +50,26 @@ See http://developer.ebay.com/products/trading/
     print $n->findvalue('Title/text()') . "\n";
   }
 
+=head1 SANDBOX USAGE
+
+  my $call = eBay::API::Simple::Trading->new( { 
+    appid   => '<your appid>',
+    devid   => '<your devid>',
+    certid  => '<your certid>',
+    token   => '<auth token>',
+    domain  => 'api.sandbox.ebay.com',
+  } );
+  
+  $call->execute( 'GetSearchResults', { Query => 'shoe' } );
+
+  if ( $call->has_error() ) {
+     die "Call Failed:" . $call->errors_as_string();
+  }
+
+  # getters for the response DOM or Hash
+  my $dom  = $call->response_dom();
+  my $hash = $call->response_hash();
+
 =head1 PUBLIC METHODS
 
 =head2 new( { %options } } 

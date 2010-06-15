@@ -48,6 +48,23 @@ See http://developer.ebay.com/products/merchandising/
     print $n->findvalue('title/text()') . "\n";
   }
 
+=head1 SANDBOX USAGE
+
+  my $call = eBay::API::Simple::Merchandising->new( { 
+     appid => '<your app id here>' 
+     domain => '',
+  } );
+  
+  $call->execute( 'getMostWatchedItems', { maxResults => 3, categoryId => 267 }  );
+
+  if ( $call->has_error() ) {
+     die "Call Failed:" . $call->errors_as_string();
+  }
+
+  # getters for the response DOM or Hash
+  my $dom  = $call->response_dom();
+  my $hash = $call->response_hash();
+  
 =head1 PUBLIC METHODS
 
 =head2 new( { %options } } 

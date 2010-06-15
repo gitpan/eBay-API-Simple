@@ -2,6 +2,12 @@
 
 TODO: add ClientAlerts and BestMatch backend
 
+0.15 Tue Jun 15 15:00:55 PDT 2010
+- add sandbox docs
+- modify Finding backend to support the "X-EBAY-SOA-SERVICE-NAME" 
+  defaults to: FindingService
+  * provides support custom services on the Finding platform
+   
 0.14
 - modify debugging
 - modify Trading backend: calls can now be made without a password 
