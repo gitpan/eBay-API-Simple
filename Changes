@@ -2,6 +2,9 @@
 
 TODO: add ClientAlerts and BestMatch backend
 
+0.16 Thu Jul  1 15:00:46 PDT 2010
+- add support for attributes in the request via enable_attributes flag
+
 0.15 Tue Jun 15 15:00:55 PDT 2010
 - add sandbox docs
 - modify Finding backend to support the "X-EBAY-SOA-SERVICE-NAME" 

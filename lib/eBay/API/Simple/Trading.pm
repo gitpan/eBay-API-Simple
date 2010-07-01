@@ -138,6 +138,15 @@ Specifies is the API calls should be made over https.
 
 defaults to 1
 
+=item enable_attributes
+
+This flag adds support for attributes in the request. If enabled request
+data notes much be defined like so,
+
+myElement => { content => 'element content', myattr => 'attr value' }
+
+defaults to 0
+
 =back
 
 =head3 ALTERNATE CONFIG VIA ebay.ini
@@ -287,7 +296,12 @@ sub _get_request_body {
              . "<" . $self->{verb} . "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
              . "<RequesterCredentials><eBayAuthToken>"
              . $self->api_config->{token} . "</eBayAuthToken></RequesterCredentials>"
-             . XMLout( $self->{call_data}, NoAttr => 1, KeepRoot => 1, RootName => undef )
+             . XMLout( 
+                 $self->{call_data}, 
+                 NoAttr => !$self->api_config->{enable_attributes},
+                 KeepRoot => 1, 
+                 RootName => undef 
+             )
              . "</" . $self->{verb} . "Request>";
 
           return $xml;

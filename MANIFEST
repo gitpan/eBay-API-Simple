@@ -17,4 +17,5 @@ t/04RSS.t
 t/05Finding.t
 t/06Merchandising.t
 t/08WorldofGoodFinding.t
+t/09HalfShopping.t
 META.yml                                 Module meta-data (added by MakeMaker)

@@ -72,13 +72,14 @@ sub new {
     bless( $self, $class );
     
     # set some defaults 
-    $self->api_config->{siteid}  = 0;
-    $self->api_config->{timeout} = 20 unless defined $api_args->{timeout};
+    $self->api_config->{siteid}   = 0;
+    $self->api_config->{enable_attributes} = 0;
+    $self->api_config->{timeout}  = 20 unless defined $api_args->{timeout};
+    
     unless (defined $api_args->{preserve_namespace}) {
         $self->api_config->{preserve_namespace} = 0;
     }
     
-
     # set the config args 
     $self->api_config_append( $api_args );
     
