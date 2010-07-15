@@ -12,6 +12,7 @@ WriteMakefile(
         'XML::Parser'    => 0,
         'XML::Simple'    => 0,
         'URI::Escape'    => 0,
+        'YAML'           => 0,
     }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/eBay/API/Simple.pm', #abstract from module

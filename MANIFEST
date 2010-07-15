@@ -7,6 +7,7 @@ lib/eBay/API/Simple/RSS.pm
 lib/eBay/API/Simple/Shopping.pm
 lib/eBay/API/Simple/Trading.pm
 lib/eBay/API/SimpleBase.pm
+docs/ebay.yaml
 Makefile.PL
 MANIFEST			This list of files
 README
@@ -16,6 +17,5 @@ t/03Trading.t
 t/04RSS.t
 t/05Finding.t
 t/06Merchandising.t
-t/08WorldofGoodFinding.t
 t/09HalfShopping.t
 META.yml                                 Module meta-data (added by MakeMaker)

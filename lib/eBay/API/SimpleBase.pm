@@ -10,6 +10,7 @@ use HTTP::Headers;
 use LWP::UserAgent;
 use XML::Parser;
 use URI::Escape;
+use YAML;
 
 use base 'eBay::API::Simple';
 
@@ -119,8 +120,8 @@ sub execute {
     $self->{response_content}  = s/xmlns=["'][^"']+//;
 
     if ( $DEBUG ) {
-        require Data::Dumper;
-        print STDERR $self->{response_content};
+        print STDERR $self->request_object->as_string();
+        print STDERR $self->response_object->as_string();
     }
 
 }
@@ -346,6 +347,24 @@ sub api_config_append {
     }
 }
 
+=head2 api_config_dump()
+
+This method is used for debugging
+
+=cut
+
+sub api_config_dump {
+    my $self = shift;
+
+    my $str;
+    
+    while ( my( $key, $value ) = each( %{ $self->api_config } ) ) {
+         $str .= sprintf( "%s=%s\n", $key, $value );
+    }
+    
+    return $str;
+}
+
 =head2 errors_append
 
 This method lets you append errors to the errors stack
@@ -554,6 +573,76 @@ sub _get_request_object {
     );
 
     return $objRequest;
+}
+
+=head2 _load_yaml_defaults
+
+This method will search for the ebay.yaml file and load configuration defaults
+for each service endpoint
+
+YAML files can be placed at the below locations. The first file found will
+be loaded.
+
+  ./ebay.yaml, ~/ebay.yaml, /etc/ebay.yaml 
+
+Sample YAML:
+
+  # Trading - External
+  api.ebay.com:
+    appid: <your appid>
+    certid: <your certid>
+    devid: <your devid>
+    token: <token>
+    
+  # Shopping
+  open.api.ebay.com:
+    appid: <your appid>
+    certid: <your certid>
+    devid: <your devid>
+    version: 671
+
+  # Finding/Merchandising
+  svcs.ebay.com:
+    appid: <your appid>
+    version: 1.0.0
+
+
+=cut
+
+sub _load_yaml_defaults {
+    my $self = shift;
+
+    return 1 if $self->{_yaml_loaded};
+    
+    my @files = qw(
+        ./ebay.yaml
+        $ENV{HOME}/ebay.yaml
+        /etc/ebay.yaml
+    );
+
+    foreach my $file ( reverse @files ) {
+        if ( open( FILE, "<", $file ) ) {
+
+            my $yaml;
+            { 
+                local $/ = undef; 
+                $yaml = <FILE>; 
+            }                
+
+            my $hashref = YAML::Load($yaml);
+            my $domain  = $self->api_config->{domain};
+
+            if ( defined $hashref->{ $domain } ) {
+                $self->api_config_append( $hashref->{ $domain } );
+            }
+            
+            $self->{_yaml_loaded} = 1;
+            close FILE;
+            last;
+        }
+    }
+
+
 }
 
 1;

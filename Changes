@@ -2,6 +2,12 @@
 
 TODO: add ClientAlerts and BestMatch backend
 
+0.17 Thu Jul 15 14:09:57 PDT 2010
+- add YAML support for API configurations 
+- remove worldofgood test
+- add SellerReport.pl script for pulling out the sellers details from 
+  Shopping and Trading api and the usage of ebay.yaml 
+
 0.16 Thu Jul  1 15:00:46 PDT 2010
 - add support for attributes in the request via enable_attributes flag
 

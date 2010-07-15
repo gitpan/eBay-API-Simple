@@ -126,14 +126,37 @@ defaults to 0
 
 =back
 
-=head3 ALTERNATE CONFIG VIA ebay.ini
+=head3 ALTERNATE CONFIG VIA ebay.yaml
 
-The constructor will fallback to the ebay.ini file to get any missing 
-credentials. The following files will be checked, ./ebay.ini, ~/ebay.ini, 
-/etc/ebay.ini which are in the order of precedence.
+An ebay.yaml file can be used for configuring each 
+service endpoint.
 
-  # your application key
-  ApplicationKey=LJKGHKLJGKJHG
+YAML files can be placed at the below locations. The first 
+file found will be loaded.
+
+    ./ebay.yaml, ~/ebay.yaml, /etc/ebay.yaml 
+
+Sample YAML:
+
+    # Trading - External
+    api.ebay.com:
+      appid: <your appid>
+      certid: <your certid>
+      devid: <your devid>
+      token: <token>
+
+    # Shopping
+    open.api.ebay.com:
+      appid: <your appid>
+      certid: <your certid>
+      devid: <your devid>
+      version: 671
+
+    # Finding/Merchandising
+    svcs.ebay.com:
+      appid: <your appid>
+      version: 1.0.0
+
 
 =cut
 
@@ -149,6 +172,14 @@ sub new {
     $self->api_config->{response_encoding} ||= 'XML'; # JSON, NV, SOAP
     $self->api_config->{request_encoding}  ||= 'XML';
 
+    $self->_load_yaml_defaults();
+    
+    if ( $DEBUG ) {
+        print STDERR sprintf( "API CONFIG:\n%s\n",
+            $self->api_config_dump()
+        );        
+    }
+    
     $self->_load_credentials();
     
     return $self;    
@@ -187,8 +218,8 @@ sub execute {
     $self->{response_content} = $self->_execute_http_request();
 
     if ( $DEBUG ) {
-        require Data::Dumper;
-        print STDERR $self->{response_content};
+        print STDERR $self->request_object->as_string();
+        print STDERR $self->response_object->as_string();
     }
 
 }

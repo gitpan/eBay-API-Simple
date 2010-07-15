@@ -23,7 +23,7 @@ BEGIN {
 } 
 
 my $call = eBay::API::Simple::Trading->new( {
-    https  => 0,
+    # domain => 'internal-api.vip.ebay.com',
 } );
 
 #$call->api_init( { 
@@ -82,5 +82,5 @@ foreach my $n ( @nodes ) {
     #diag( $n->findvalue('Title/text()') );
     ok( $n->findvalue('Title/text()') ne '', 'title check' );
 }
-
+ 
 #diag Dumper( $call->response_hash );

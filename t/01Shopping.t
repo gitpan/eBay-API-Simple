@@ -52,7 +52,6 @@ SKIP: {
     $call->execute( 'FindItemsAdvanced', { 
         QueryKeywords => 'black shoes', 
         MaxEntries => 5,
-        Condition => 'Used',
     } );
 
     #diag $call->request_content;

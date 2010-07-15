@@ -149,29 +149,64 @@ defaults to 0
 
 =back
 
-=head3 ALTERNATE CONFIG VIA ebay.ini
+=head3 ALTERNATE CONFIG VIA ebay.yaml
 
-The constructor will fallback to the ebay.ini file to get any missing
-credentials. The following files will be checked, ./ebay.ini, ~/ebay.ini,
-/etc/ebay.ini which are in the order of precedence.
+An ebay.yaml file can be used for configuring each 
+service endpoint.
 
- # your developer key
- DeveloperKey=KLJHAKLJHLKJHLKJH
+YAML files can be placed at the below locations. The first 
+file found will be loaded.
 
- # your application key
- ApplicationKey=LJKGHKLJGKJHG
+    ./ebay.yaml, ~/ebay.yaml, /etc/ebay.yaml 
 
- # your certificate key
- CertificateKey=SUYTYWTKWTYIUYTWIUTY
+Sample YAML:
 
- # your token (a very BIG string)
- Token=JKHG7yr8wehIEWH9O78YWERF90HF9UHJESIPHJFV94Y4089734Y
+    # Trading - External
+    api.ebay.com:
+      appid: <your appid>
+      certid: <your certid>
+      devid: <your devid>
+      token: <token>
+
+    # Shopping
+    open.api.ebay.com:
+      appid: <your appid>
+      certid: <your certid>
+      devid: <your devid>
+      version: 671
+
+    # Finding/Merchandising
+    svcs.ebay.com:
+      appid: <your appid>
+      version: 1.0.0
 
 =cut
 
 sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
+    
+    $self->api_config->{domain}  ||= 'api.ebay.com';    
+    $self->api_config->{uri}     ||= '/ws/api.dll';
+    $self->api_config->{version} ||= '543';
+        
+    unless ( defined $self->api_config->{https} ) {
+        $self->api_config->{https} = 1;
+    }
+
+    unless ( defined $self->api_config->{siteid} ) {
+        $self->api_config->{siteid} = 0;
+    }
+
+    $self->_load_yaml_defaults();
+    
+    if ( $DEBUG ) {
+        print STDERR sprintf( "API CONFIG:\n%s\n",
+            $self->api_config_dump()
+        );        
+    }
+
+        
     return $self;
 }
 
@@ -340,8 +375,8 @@ sub _get_request_headers {
         $self->api_config->{version});
     $obj->push_header("X-EBAY-API-DEV-NAME"  => $self->api_config->{devid});
     $obj->push_header("X-EBAY-API-APP-NAME"  => $self->api_config->{appid});
-    $obj->push_header("X-EBAY-API-CERT-NAME"  => $self->api_config->{certid});
-    $obj->push_header("X-EBAY-API-SITEID"  => $self->api_config->{siteid});
+    $obj->push_header("X-EBAY-API-CERT-NAME" => $self->api_config->{certid});
+    $obj->push_header("X-EBAY-API-SITEID"    => $self->api_config->{siteid});
     $obj->push_header("X-EBAY-API-CALL-NAME" => $self->{verb});
     $obj->push_header("Content-Type" => "text/xml");
 
@@ -433,28 +468,6 @@ sub _load_credentials {
         die "missing Authentication : token or username/password \n";
     }
 
-    # setting defaults
-    unless ( defined $self->api_config->{domain} ) {
-        $self->api_config->{domain} = 'open.api.ebay.com'; # api.sandbox.ebay.com
-    }
-
-    unless ( defined $self->api_config->{uri} ) {
-        $self->api_config->{uri} = '/ws/api.dll';
-    }
-
-    unless ( defined $self->api_config->{https} ) {
-        $self->api_config->{https} = 1;
-        print STDERR "since undefined https value is now: "
-            . $self->api_config->{https} . "\n" if $DEBUG;
-    }
-
-    unless ( defined $self->api_config->{siteid} ) {
-        $self->api_config->{siteid} = 0;
-    }
-
-    unless (defined $self->api_config->{version} ) {
-         $self->api_config->{version} = '543';
-    }
 
     $self->{_credentials_loaded} = 1;
     return;
@@ -487,10 +500,13 @@ sub _fish_ebay_ini {
 
     # Make exception for windows
     if ( $^O eq 'MSWin32' ) {
-        @files = ( './ebay.ini', );
+        @files = ( './ebay.ini', './ebay.yaml' );
     }
     else {
           @files = (
+              './ebay.yaml',
+              "$ENV{HOME}/ebay.yaml",
+              '/etc/ebay.yaml',
              './ebay.ini',
              "$ENV{HOME}/ebay.ini",
              '/etc/ebay.ini',
@@ -499,6 +515,7 @@ sub _fish_ebay_ini {
 
     foreach my $file ( reverse @files ) {
         if ( open( FILE, "<", $file ) ) {
+            
             while ( my $line = <FILE> ) {
                 chomp( $line );
 
@@ -511,9 +528,10 @@ sub _fish_ebay_ini {
                     $v =~ s/\s+$//;
 
                     $self->{_ebay_ini}{$k} = $v;
-           
+       
                 }
             }
+
             close FILE;
         }
     }
