@@ -8,6 +8,8 @@ use base 'eBay::API::SimpleBase';
 use HTTP::Request;
 use HTTP::Headers;
 use XML::Simple;
+use Encode;
+use utf8;
 
 our $DEBUG = 0;
 
@@ -287,6 +289,15 @@ This method supplies the XML body for the web service request
 
 sub _get_request_body {
     my $self = shift;
+
+    # handle a special unicode issue with perl 5.8.1
+    if ( $self->{call_data}->{keywords} && $] eq '5.008001' ) {   
+        Encode::_utf8_off($self->{call_data}->{keywords});
+    }
+    elsif ($self->{call_data}->{keywords}) {
+        $self->{call_data}->{keywords} 
+            = Encode::encode('utf8', $self->{call_data}->{keywords});
+    }
 
     my $xml = "<?xml version='1.0' encoding='utf-8'?>"
         . "<" . $self->{verb} . "Request xmlns=\"http://www.ebay.com/marketplace/search/v1/services\">"

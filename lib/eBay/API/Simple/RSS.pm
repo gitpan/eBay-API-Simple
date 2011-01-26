@@ -9,6 +9,7 @@ use HTTP::Request;
 use HTTP::Headers;
 use XML::Simple;
 use URI::Escape;
+use utf8;
 
 our $DEBUG = 0;
 
@@ -163,7 +164,7 @@ sub _get_request_body {
     
     if ( $self->api_config->{request_method} ne 'GET' ) {
         for my $k ( keys %{ $self->{args} } ) {
-            push( @p, ( $k . '=' . uri_escape( $self->{args}{$k} ) ) );
+            push( @p, ( $k . '=' . uri_escape_utf8( $self->{args}{$k} ) ) );
         }
     }
     

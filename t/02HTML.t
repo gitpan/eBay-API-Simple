@@ -24,7 +24,7 @@ BEGIN {
 
 my $call = eBay::API::Simple::HTML->new();
 
-$call->execute( 'http://www.timkeefer.com/', { utm_campaign =>'simple_test' } );
+$call->execute( 'http://www.cpan.org/', { utm_campaign =>'simple_test' } );
 
 #diag $call->request_content();
 #diag $call->response_content();
@@ -37,11 +37,11 @@ else {
     is( ref $call->response_hash(), 'HASH', 'response hash' );
 
     like( $call->response_hash->{head}{title}, 
-        qr/^Tim Keefer/, 
+        qr/^CPAN/, 
         'hash test' 
     );
     
-    ok( $call->nodeContent('title') eq 'Tim Keefer | timkeefer.com ', 
+    ok( $call->nodeContent('title') eq 'CPAN', 
         'nodeContent test' );
     #diag Dumper( $call->response_hash );
 }

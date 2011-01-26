@@ -9,6 +9,7 @@ use HTTP::Request;
 use HTTP::Headers;
 use XML::Simple;
 use URI::Escape;
+use utf8;
 
 our $DEBUG = 0;
 

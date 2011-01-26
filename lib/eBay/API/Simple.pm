@@ -1,6 +1,6 @@
 package eBay::API::Simple;
 
-our $VERSION = '0.17';
+our $VERSION = '0.19';
 
 =head1 NAME 
 

@@ -8,6 +8,7 @@ use base 'eBay::API::SimpleBase';
 use HTTP::Request;
 use HTTP::Headers;
 use XML::Simple;
+use utf8;
 
 our $DEBUG = 0;
 

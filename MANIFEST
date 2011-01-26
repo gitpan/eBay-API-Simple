@@ -16,6 +16,7 @@ t/02HTML.t
 t/03Trading.t
 t/04RSS.t
 t/05Finding.t
+t/05Finding_utf8.t
 t/06Merchandising.t
 t/09HalfShopping.t
 META.yml                                 Module meta-data (added by MakeMaker)

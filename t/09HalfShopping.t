@@ -6,6 +6,8 @@ use lib qw/lib/;
 
 my @skip_msg;
 
+plan skip_all => join( ' ', 'Skipping Half test - not implemented' );
+
 BEGIN {
 
 
@@ -17,10 +19,10 @@ BEGIN {
         push @skip_msg, 'missing module eBay::API::Simple::Shopping, skipping test';
     }
     if ( scalar( @skip_msg ) ) {
-        plan skip_all => join( ' ', @skip_msg );
+        #plan skip_all => join( ' ', @skip_msg );
     }
     else {
-        plan qw(no_plan);
+        #plan qw(no_plan);
     }    
 }
 

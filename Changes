@@ -2,6 +2,15 @@
 
 TODO: add ClientAlerts and BestMatch backend
 
+0.19 Wed Jan 26 13:35:59 PST 2011
+- check for $ENV{HOME} being defined before using
+- add more utf8 fixes
+- add special fix for unicode in 5.8.1
+
+0.18 Wed Jul 28 13:11:30 GMT+7 2010
+- Encode "keywords" field for UTF-8 in Finding module
+- Test for UTF-8 compatibility for Finding module
+
 0.17 Thu Jul 15 14:09:57 PDT 2010
 - add YAML support for API configurations 
 - remove worldofgood test

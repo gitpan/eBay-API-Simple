@@ -11,6 +11,7 @@ use LWP::UserAgent;
 use XML::Parser;
 use URI::Escape;
 use YAML;
+use utf8;
 
 use base 'eBay::API::Simple';
 
@@ -481,7 +482,7 @@ sub _build_url {
 
     my @p;
     for my $k ( keys %{ $args } ) {
-        push( @p, ( $k . '=' . uri_escape( $args->{$k} ) ) );
+        push( @p, ( $k . '=' . uri_escape_utf8( $args->{$k} ) ) );
     }
 
     return( scalar( @p ) > 0 ? $base . '?' . join('&', @p) : $base );
@@ -614,13 +615,15 @@ sub _load_yaml_defaults {
 
     return 1 if $self->{_yaml_loaded};
     
-    my @files = qw(
-        ./ebay.yaml
-        $ENV{HOME}/ebay.yaml
-        /etc/ebay.yaml
+    my @files = (
+        "./ebay.yaml",
+        "/etc/ebay.yaml",
     );
 
+    push(@files, "$ENV{HOME}/ebay.yaml") if defined ($ENV{HOME});
+
     foreach my $file ( reverse @files ) {
+
         if ( open( FILE, "<", $file ) ) {
 
             my $yaml;

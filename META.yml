@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               eBay-API-Simple
-version:            0.17
+version:            0.19
 abstract:           Flexible SDK supporting all eBay web services
 author:
     - Tim Keefer <tkeefer@gmail.com>
@@ -23,7 +23,7 @@ no_index:
     directory:
         - t
         - inc
-generated_by:       ExtUtils::MakeMaker version 6.54
+generated_by:       ExtUtils::MakeMaker version 6.55_02
 meta-spec:
     url:      http://module-build.sourceforge.net/META-spec-v1.4.html
     version:  1.4

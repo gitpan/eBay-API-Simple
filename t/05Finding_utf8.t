@@ -32,7 +32,7 @@ my $call;
 eval {
 
     $call = eBay::API::Simple::Finding->new(
-        { appid => undef } # <----- your appid here
+        { appid => '' } # <----- your appid here
     );
 
 };
@@ -45,7 +45,8 @@ SKIP: {
     skip join("\n", @skip_msg), 1 if scalar(@skip_msg);
    
     $call->execute( 'findItemsByKeywords', { 
-        keywords => 'black shoes', 
+        #keywords => '(shoe, bota, туфля, Alfredo Falcón)', 
+        keywords => 'Falcón', 
         paginationInput => { entriesPerPage => 15 } 
     } );
 
@@ -64,7 +65,7 @@ SKIP: {
             'response timestamp' 
         );
     
-        ok( $call->nodeContent('totalEntries') > 10, 'response total entries' );
+        ok( $call->nodeContent('totalEntries') > 2, 'response total entries' );
         #diag( 'total entries: ' . $call->nodeContent('totalEntries') );
         #diag( Dumper( $call->response_hash() ) );
     }
@@ -80,13 +81,6 @@ SKIP: {
     is( $call->has_error(), 0, 'error check' );
     is( $call->errors_as_string(), '', 'error string check' );
     ok( $call->nodeContent('totalEntries') > 10, 'response total entries' );
-
-# now make sure it works with unicode
-    $call->execute( 'findItemsByKeywords', { keywords => '( shoe, bota, sko, schuh, zapato, chaussure, παπούτσι, scarpa, туфля' } );
-    is( $call->has_error(), 0, 'error check with unicode characters' );
-    is( $call->errors_as_string(), '', 'error string check' );
-    ok( $call->nodeContent('totalEntries') > 10, 'response total entries' );
-
 
     #diag( Dumper( $call->response_hash() ) );
 
