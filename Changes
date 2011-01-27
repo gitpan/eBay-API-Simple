@@ -2,6 +2,9 @@
 
 TODO: add ClientAlerts and BestMatch backend
 
+0.20 Wed Jan 26 21:23:35 PST 2011
+- fix test
+
 0.19 Wed Jan 26 13:35:59 PST 2011
 - check for $ENV{HOME} being defined before using
 - add more utf8 fixes

@@ -32,7 +32,7 @@ my $call;
 eval {
 
     $call = eBay::API::Simple::Finding->new(
-        { appid => '' } # <----- your appid here
+        { appid => undef } # <----- your appid here
     );
 
 };
