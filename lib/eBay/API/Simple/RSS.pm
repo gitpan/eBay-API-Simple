@@ -164,7 +164,16 @@ sub _get_request_body {
     
     if ( $self->api_config->{request_method} ne 'GET' ) {
         for my $k ( keys %{ $self->{args} } ) {
-            push( @p, ( $k . '=' . uri_escape_utf8( $self->{args}{$k} ) ) );
+            if ( ref( $self->{args}{$k} ) eq 'ARRAY' ) {
+                for my $ap ( @{ $self->{args}{$k} } ) {
+                    push( @p, 
+                        ( $k . '=' . uri_escape_utf8( $ap ) ) 
+                    );                    
+                }
+            }
+            else {
+                push( @p, ( $k . '=' . uri_escape_utf8( $self->{args}{$k} ) ) );
+            }
         }
     }
     

@@ -482,7 +482,16 @@ sub _build_url {
 
     my @p;
     for my $k ( keys %{ $args } ) {
-        push( @p, ( $k . '=' . uri_escape_utf8( $args->{$k} ) ) );
+        if ( ref( $args->{$k} ) eq 'ARRAY' ) {
+            for my $ap ( @{ $args->{$k} } ) {
+                push( @p, 
+                    ( $k . '=' . uri_escape_utf8( $ap ) ) 
+                );                    
+            }
+        }
+        else {
+            push( @p, ( $k . '=' . uri_escape_utf8( $args->{$k} ) ) );
+        }        
     }
 
     return( scalar( @p ) > 0 ? $base . '?' . join('&', @p) : $base );

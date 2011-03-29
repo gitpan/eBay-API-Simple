@@ -2,6 +2,11 @@
 
 TODO: add ClientAlerts and BestMatch backend
 
+0.21 Thu Jan 27 22:08:31 PST 2011
+- build url function now allows for multiple keys in the query string
+  i.e. /uri/?q=foo1&q=foo2&q=foo3
+- fix prereq - dependent on URI::Encode >= 3.30
+
 0.20 Wed Jan 26 21:23:35 PST 2011
 - fix test
 

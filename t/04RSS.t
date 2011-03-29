@@ -25,8 +25,8 @@ BEGIN {
 my $call = eBay::API::Simple::RSS->new();
 
 $call->execute(
-    'http://sfbay.craigslist.org/sss/index.rss',
-    { page => 1 },
+    'http://worldofgood.ebay.com/Eco-Organic-Clothes-Shoes-Men-Women-Children/43/list',
+    { format => 'rss' },
 );
 
 if ( $call->has_error() ) {
