@@ -11,7 +11,8 @@ WriteMakefile(
         'LWP::UserAgent' => 0,
         'XML::Parser'    => 0,
         'XML::Simple'    => 0,
-        'URI::Escape'    => '>=3.30',
+        'URI'            => 1.57,
+        'URI::Escape'    => 0,
         'YAML'           => 0,
     }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
