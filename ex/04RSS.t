@@ -51,7 +51,7 @@ my $call2 = eBay::API::Simple::RSS->new(
 );
 
 $call2->execute(
-    'http://sfbay.craigslist.org/sss/index.rss',
+    'http://en.wikipedia.org/w/index.php?title=Special:RecentChanges&feed=rss',
     { page => 1 },
 );
 

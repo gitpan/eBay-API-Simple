@@ -75,14 +75,20 @@ SKIP: {
     ok( $call->errors_as_string() ne '', 'check for error message' );
     ok( $call->response_content() ne '', 'check for response content' );
 
-    $call->execute( 'findItemsByKeywords', { keywords => 'shoe' } );
+    $call->execute( 'findItemsByKeywords', 
+                    { keywords => 'shoe',
+                      paginationInput => { entriesPerPage => 15 }
+                  } );
 
     is( $call->has_error(), 0, 'error check' );
     is( $call->errors_as_string(), '', 'error string check' );
     ok( $call->nodeContent('totalEntries') > 10, 'response total entries' );
 
 # now make sure it works with unicode
-    $call->execute( 'findItemsByKeywords', { keywords => '( shoe, bota, sko, schuh, zapato, chaussure, παπούτσι, scarpa, туфля' } );
+    $call->execute( 'findItemsByKeywords', 
+                    { keywords => '( shoe, bota, sko, schuh, zapato, chaussure, παπούτσι, scarpa, туфля',
+                      paginationInput => { entriesPerPage => 15 }
+                  } );
     is( $call->has_error(), 0, 'error check with unicode characters' );
     is( $call->errors_as_string(), '', 'error string check' );
     ok( $call->nodeContent('totalEntries') > 10, 'response total entries' );

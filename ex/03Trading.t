@@ -35,7 +35,12 @@ my $call = eBay::API::Simple::Trading->new( {
 #} );
 
 eval{
-    $call->execute( 'GetSearchResults', { Query => 'shoe' } );
+    $call->execute( 'GetCategories', 
+                    { DetailLevel => 'ReturnAll',
+                      LevelLimit => 2,
+                      CategoryParent => 11116,
+                  } 
+                );
 };
 
 SKIP: {
@@ -53,12 +58,11 @@ SKIP: {
             'response timestamp' 
         );
 
-        ok( $call->nodeContent('TotalNumberOfEntries') > 10, 'response total items' );
+        ok( $call->nodeContent('ReduceReserveAllowed') =~ /(true|false)/, 
+            'reduce reserve allowed node' );
     }
         
 }
-
-exit;
 
 $call->execute( 'BadCallSSS', { Query => 'shoe' } );
 
@@ -71,7 +75,6 @@ $call->execute( 'GetSearchResults', { Query => 'shoe', Pagination => { EntriesPe
 is( $call->has_error(), 0, 'error check' );
 is( $call->errors_as_string(), '', 'error string check' );
 ok( $call->nodeContent('TotalNumberOfEntries') > 10, 'response total items' );
-
 #diag $call->request_object->as_string();
 
 my @nodes = $call->response_dom->findnodes(
@@ -84,3 +87,4 @@ foreach my $n ( @nodes ) {
 }
  
 #diag Dumper( $call->response_hash );
+

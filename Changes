@@ -2,6 +2,14 @@
 
 TODO: add ClientAlerts and BestMatch backend
 
+0.24
+- Fix HTML and RSS test scripts (stale URLs)
+- In build_urls method, use sort for consistent URL output
+- add better error handling for JSON backend
+
+0.23 Fri May 27 17:31:16 PDT 2011
+- add JSON backend
+
 0.22 Fri Apr  1 10:16:30 PDT 2011
 - rework test scripts
 
@@ -13,6 +21,7 @@ TODO: add ClientAlerts and BestMatch backend
 0.20 Wed Jan 26 21:23:35 PST 2011
 - fix test
 
+>>>>>>> .r92
 0.19 Wed Jan 26 13:35:59 PST 2011
 - check for $ENV{HOME} being defined before using
 - add more utf8 fixes

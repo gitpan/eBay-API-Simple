@@ -481,7 +481,7 @@ sub _build_url {
     my $args = shift;
 
     my @p;
-    for my $k ( keys %{ $args } ) {
+    for my $k ( sort keys %{ $args } ) {
         if ( ref( $args->{$k} ) eq 'ARRAY' ) {
             for my $ap ( @{ $args->{$k} } ) {
                 push( @p, 
