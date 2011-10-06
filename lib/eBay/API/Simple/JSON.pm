@@ -77,14 +77,14 @@ sub new {
     return $self;    
 }
 
-=head2 execute( $url, $%args )
+=head2 prepare( $url, $%args )
 
-  $call->execute( 
+  $call->prepare( 
     'http://sfbay.craigslist.org/search/sss',
     { query  => 'shirt', format => 'rss', } 
   );
   
-This method will construct the API request the supplied URL. 
+This method will construct the API request using the supplied URL. 
 
 =head3 Options
 
@@ -102,23 +102,29 @@ The supplied args will be encoded and appended to the URL
 
 =cut
 
-sub execute {
+sub prepare {
     my $self = shift;
-    
+
     $self->{url} = shift;
 
     if ( ! defined $self->{url} ) {
         die "missing url";
     }
-    
+
     # collect the optional args
     $self->{request_data} = shift;
-    $self->{response_content} = $self->_execute_http_request();
+}
 
-    if ( $DEBUG ) {
-        print STDERR $self->request_object->as_string();
-        print STDERR $self->response_object->as_string();
-    }
+=head2 process()
+
+This method will process the API response.
+
+=cut
+
+sub process {
+    my $self = shift;
+
+    $self->SUPER::process();
 
     $self->response_hash(); # build the hash now to detect errors
 }

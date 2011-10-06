@@ -4,6 +4,7 @@ lib/eBay/API/Simple/Finding.pm
 lib/eBay/API/Simple/HTML.pm
 lib/eBay/API/Simple/JSON.pm
 lib/eBay/API/Simple/Merchandising.pm
+lib/eBay/API/Simple/Parallel.pm
 lib/eBay/API/Simple/RSS.pm
 lib/eBay/API/Simple/Shopping.pm
 lib/eBay/API/Simple/Trading.pm

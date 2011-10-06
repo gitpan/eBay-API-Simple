@@ -186,12 +186,12 @@ sub new {
     return $self;    
 }
 
-=head2 execute( $verb, $call_data )
+=head2 prepare( $verb, $call_data )
 
-  $self->execute( 'FindItemsAdvanced', { QueryKeywords => 'shoe' } );
+  $self->prepare( 'FindItemsAdvanced', { QueryKeywords => 'shoe' } );
  
 This method will construct the API request based on the $verb and
-the $call_data and then post the request to the web service endpoint. 
+the $call_data.
 
 =item $verb (required)
 
@@ -203,7 +203,7 @@ hashref of call_data that will be turned into xml.
 
 =cut
 
-sub execute {
+sub prepare {
     my $self = shift;
     
     $self->{verb}      = shift;
@@ -215,14 +215,6 @@ sub execute {
     
     # make sure we have appid
     $self->_load_credentials();
-    
-    $self->{response_content} = $self->_execute_http_request();
-
-    if ( $DEBUG ) {
-        print STDERR $self->request_object->as_string();
-        print STDERR $self->response_object->as_string();
-    }
-
 }
 
 =head1 BASECLASS METHODS

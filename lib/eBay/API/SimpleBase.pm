@@ -40,6 +40,8 @@ and must be subclassed to provide the complete web service support.
 
 =item L<eBay::API::Simple::HTML>
 
+=item L<eBay::API::Simple::JSON>
+
 =item L<eBay::API::Simple::RSS>
 
 =head1 GET THE SOURCE
@@ -62,6 +64,8 @@ see subclass for more docs.
 
 =item L<eBay::API::Simple::HTML>
 
+=item L<eBay::API::Simple::JSON>
+
 =item L<eBay::API::Simple::RSS>
 
 =cut
@@ -77,6 +81,7 @@ sub new {
     $self->api_config->{siteid}   = 0;
     $self->api_config->{enable_attributes} = 0;
     $self->api_config->{timeout}  = 20 unless defined $api_args->{timeout};
+    $self->api_config->{parallel} = $api_args->{parallel};
     
     unless (defined $api_args->{preserve_namespace}) {
         $self->api_config->{preserve_namespace} = 0;
@@ -90,10 +95,9 @@ sub new {
 
 =head2 execute( $verb, $call_data )
 
-This method should be supplied by the subclass. This one
-is only here to provide an example. See actual subclass for docs.
+Calling this method will prepare the request, execute, and process the response.
 
-Calling this method will make build and execute the api request.
+It is recommended that prepare and process be subclassed rather than this method.
 
 =item $verb (required)
 
@@ -107,24 +111,48 @@ hashref of call_data that will be turned into xml.
 
 sub execute {
     my $self = shift;
-    
+
+    $self->prepare( @_ );
+
+    $self->_execute_http_request();
+
+    if ( defined $self->{response_content} ) {
+        $self->process();
+    }
+}
+
+=head2 prepare( $verb, $call_data )
+
+This is called by execute to prepare the request
+and may be supplied by the subclass.
+
+=cut
+
+sub prepare {
+    my $self = shift;
+
     $self->{verb}      = shift;
     $self->{call_data} = shift;
     
     if ( ! defined $self->{verb} || ! defined $self->{call_data} ) {
         die "missing verb and call_data";
     }
-       
-    $self->{response_content} = $self->_execute_http_request();
+}
 
-    # remove xmlns 
-    $self->{response_content}  = s/xmlns=["'][^"']+//;
+=head2 process()
+
+This is called by execute to process the response
+and may be supplied by the subclass.
+
+=cut
+
+sub process {
+    my $self = shift;
 
     if ( $DEBUG ) {
         print STDERR $self->request_object->as_string();
         print STDERR $self->response_object->as_string();
     }
-
 }
 
 =head2 request_agent
@@ -405,6 +433,12 @@ sub _execute_http_request {
         $self->{request_object} = $self->_get_request_object();
     }
 
+    if ( defined $self->api_config->{parallel} ) {
+        $self->{request_object}->{_ebay_api_simple_instance} = $self;
+        $self->api_config->{parallel}->register( $self->{request_object} );
+        return undef;
+    }
+
     my $max_tries = 1;
     
     if ( defined $self->api_config->{retry} ) {
@@ -413,38 +447,54 @@ sub _execute_http_request {
 
     my $content = '';
     my $error   = '';
+    my $response;
 
     for ( my $i=0; $i < $max_tries; ++$i ) {
-
-        my $response = $self->{request_agent}->request( $self->{request_object} );
-        $self->{response_object} = $response;
+        $response = $self->{request_agent}->request( $self->{request_object} );
 
         if ( $response->is_success ) {
-            $content   = $response->content();
-            
-            unless ($self->api_config->{preserve_namespace}) {
-                # strip out the namespace param, with single or double quotes
-                $content =~ s/xmlns=("[^"]+"|'[^']+') *//;
-            }
-            
-            $self->{response_content} = $content;
-            $error     = undef;
-            
-            # call the classes validate response method if it exists
-            $self->_validate_response() if $self->can('_validate_response');
-            
             last; # exit the loop
         }
-        
-        # store the error 
-        $error   = $response->status_line;
-        $content = $response->content();
     }
+
+    $self->_process_http_request( $response );
   
-    $self->errors_append( { http_response => $error } ) if defined $error;     
-  
-    $self->{response_content} = $content;
-    return $content;
+    return $self->{response_content};
+}
+
+=head2 _process_http_request
+
+This method processes the http request after it has completed.
+
+=cut
+
+sub _process_http_request {
+    my $self = shift;
+    my $response = shift;
+
+    $self->{response_object} = $response;
+
+    if ( $response->is_success ) {
+        my $content = $response->content();
+
+        unless ($self->api_config->{preserve_namespace}) {
+            # strip out the namespace param, with single or double quotes
+            $content =~ s/xmlns=("[^"]+"|'[^']+') *//;
+        }
+
+        $self->{response_content} = $content;
+
+        # call the classes validate response method if it exists
+        $self->_validate_response() if $self->can('_validate_response');
+    }
+    else {
+        # store the error 
+        my $error   = $response->status_line;
+        $self->errors_append( { http_response => $error } ) if defined $error;     
+
+        my $content = $response->content();
+        $self->{response_content} = $content;
+    }
 }
 
 =head2 _reset
@@ -666,5 +716,6 @@ Tim Keefer <tim@timkeefer.com>
 =head1 CONTRIBUTOR
 
 Andrew Dittes <adittes@gmail.com>
+Brian Gontowski <bgontowski@gmail.com>
 
 =cut

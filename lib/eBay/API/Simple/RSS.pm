@@ -60,14 +60,14 @@ sub new {
     return $self;    
 }
 
-=head2 execute( $url, $%args )
+=head2 prepare( $url, $%args )
 
-  $call->execute( 
+  $call->prepare( 
     'http://sfbay.craigslist.org/search/sss',
     { query  => 'shirt', format => 'rss', } 
   );
   
-This method will construct the API request the supplied URL. 
+This method will construct the API request using the supplied URL. 
 
 =head3 Options
 
@@ -84,7 +84,7 @@ The supplied args will be encoded and appended to the URL
 =back
 
 =cut
-sub execute {
+sub prepare {
     my $self = shift;
     
     $self->{url} = shift;
@@ -95,13 +95,6 @@ sub execute {
     
     # collect the optional args
     $self->{args} = shift;
-    $self->{response_content} = $self->_execute_http_request();
-
-    if ( $DEBUG ) {
-        print STDERR $self->request_object->as_string();
-        print STDERR $self->response_object->as_string();
-    }
-
 }
 
 =head1 BASECLASS METHODS

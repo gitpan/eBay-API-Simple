@@ -2,9 +2,12 @@
 
 TODO: add ClientAlerts and BestMatch backend
 
+0.25
+- add support for parallel requests using LWP::Parallel
+
 0.24
-- Fix HTML and RSS test scripts (stale URLs)
-- In build_urls method, use sort for consistent URL output
+- fix HTML and RSS test scripts (stale URLs)
+- in build_urls method, use sort for consistent URL output
 - add better error handling for JSON backend
 
 0.23 Fri May 27 17:31:16 PDT 2011
@@ -21,15 +24,14 @@ TODO: add ClientAlerts and BestMatch backend
 0.20 Wed Jan 26 21:23:35 PST 2011
 - fix test
 
->>>>>>> .r92
 0.19 Wed Jan 26 13:35:59 PST 2011
 - check for $ENV{HOME} being defined before using
 - add more utf8 fixes
 - add special fix for unicode in 5.8.1
 
 0.18 Wed Jul 28 13:11:30 GMT+7 2010
-- Encode "keywords" field for UTF-8 in Finding module
-- Test for UTF-8 compatibility for Finding module
+- encode "keywords" field for UTF-8 in Finding module
+- test for UTF-8 compatibility for Finding module
 
 0.17 Thu Jul 15 14:09:57 PDT 2010
 - add YAML support for API configurations 

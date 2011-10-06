@@ -54,12 +54,12 @@ sub new {
     return $self;    
 }
 
-=head2 execute( $url, $%args )
+=head2 prepare( $url, $%args )
 
-  $call->execute( 'http://en.wikipedia.org/wiki/Main_Page', { a => 'b' } );
+  $call->prepare( 'http://en.wikipedia.org/wiki/Main_Page', { a => 'b' } );
   
 This method will construct the API request based on the $verb and
-the $call_data and then post the request to the web service endpoint. 
+the $call_data.
 
 =head3 Options
 
@@ -77,7 +77,7 @@ The supplied args will be encoded and appended to the URL
 
 =cut 
 
-sub execute {
+sub prepare {
     my $self = shift;
     
     $self->{url}  = shift;
@@ -88,14 +88,6 @@ sub execute {
 
     # collect the optional args
     $self->{args} = shift;
-    
-    $self->{response_content} = $self->_execute_http_request();
-
-    if ( $DEBUG ) {
-        print STDERR $self->request_object->as_string();
-        print STDERR $self->response_object->as_string();
-    }
-
 }
 
 =head2 response_hash

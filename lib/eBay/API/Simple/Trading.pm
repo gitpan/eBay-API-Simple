@@ -211,12 +211,12 @@ sub new {
     return $self;
 }
 
-=head2 execute( $verb, $call_data )
+=head2 prepare( $verb, $call_data )
 
-  $call->execute( 'GetSearchResults', { Query => 'shoe' } );
+  $call->prepare( 'GetSearchResults', { Query => 'shoe' } );
  
 This method will construct the API request based on the $verb and
-the $call_data and then post the request to the web service endpoint. 
+the $call_data.
 
 =item $verb (required)
 
@@ -228,7 +228,7 @@ hashref of call_data that will be turned into xml.
 
 =cut
 
-sub execute {
+sub prepare {
     my $self = shift;
 
     $self->{verb}      = shift;
@@ -240,14 +240,6 @@ sub execute {
 
     # make sure we have appid, devid, certid, token
     $self->_load_credentials();
-
-    $self->{response_content} = $self->_execute_http_request();
-
-    if ( $DEBUG ) {
-        print STDERR $self->request_object->as_string();
-        print STDERR $self->response_object->as_string();
-    }
-
 }
 
 =head1 BASECLASS METHODS
@@ -331,7 +323,8 @@ sub _get_request_body {
          my $xml = "<?xml version='1.0' encoding='utf-8'?>"
              . "<" . $self->{verb} . "Request xmlns=\"urn:ebay:apis:eBLBaseComponents\">"
              . "<RequesterCredentials><eBayAuthToken>"
-             . $self->api_config->{token} . "</eBayAuthToken></RequesterCredentials>"
+             . ( $self->api_config->{token} || '' )
+             . "</eBayAuthToken></RequesterCredentials>"
              . XMLout( 
                  $self->{call_data}, 
                  NoAttr => !$self->api_config->{enable_attributes},

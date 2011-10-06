@@ -1,6 +1,6 @@
 package eBay::API::Simple;
 
-our $VERSION = '0.24';
+our $VERSION = '0.26';
 
 =head1 NAME 
 
@@ -16,6 +16,8 @@ See base class for complete docs, L<eBay::API::SimpleBase>
 
 =item L<eBay::API::SimpleBase>
 
+=item L<eBay::API::Simple::Parallel>
+
 =item L<eBay::API::Simple::Merchandising>
 
 =item L<eBay::API::Simple::Finding>
@@ -25,6 +27,8 @@ See base class for complete docs, L<eBay::API::SimpleBase>
 =item L<eBay::API::Simple::Trading>
 
 =item L<eBay::API::Simple::HTML>
+
+=item L<eBay::API::Simple::JSON>
 
 =item L<eBay::API::Simple::RSS>
 
@@ -40,6 +44,8 @@ see subclass for more docs.
 
 =item L<eBay::API::SimpleBase>
 
+=item L<eBay::API::Simple::Parallel>
+
 =item L<eBay::API::Simple::Merchandising>
 
 =item L<eBay::API::Simple::Finding>
@@ -49,6 +55,8 @@ see subclass for more docs.
 =item L<eBay::API::Simple::Trading>
 
 =item L<eBay::API::Simple::HTML>
+
+=item L<eBay::API::Simple::JSON>
 
 =item L<eBay::API::Simple::RSS>
 
