@@ -27,4 +27,4 @@ requires:
   XML::Parser: 0
   XML::Simple: 0
   YAML: 0
-version: 0.26
+version: 0.27

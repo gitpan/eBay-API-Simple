@@ -632,7 +632,28 @@ sub _get_request_object {
         $self->_get_request_body
     );
 
+    if( $self->api_config->{authorization_basic}{enabled} ) {
+        $objRequest->authorization_basic(
+            $self->api_config->{authorization_basic}{username},
+            $self->api_config->{authorization_basic}{password}
+        );
+    }
+        
     return $objRequest;
+}
+
+sub authorization_basic {
+     my $self = shift;
+     my $username = shift;
+     my $password = shift;
+     $self->api_config->{authorization_basic}{username} = $username;
+     $self->api_config->{authorization_basic}{password} = $password;
+     $self->api_config->{authorization_basic}{enabled} = 1;
+}
+
+sub disable_authorization_basic {
+     my $self = shift;
+     $self->api_config->{authorization_basic}{enabled} = 0;
 }
 
 =head2 _load_yaml_defaults

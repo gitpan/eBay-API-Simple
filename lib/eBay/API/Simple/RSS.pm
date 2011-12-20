@@ -214,6 +214,13 @@ sub _get_request_object {
         $self->_get_request_body,
     );
 
+    if( $self->api_config->{authorization_basic}{enabled} ) {
+        $request_obj->authorization_basic(
+            $self->api_config->{authorization_basic}{username},
+            $self->api_config->{authorization_basic}{password}
+        );
+    }
+
     return $request_obj;
 }
 

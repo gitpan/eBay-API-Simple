@@ -2,6 +2,9 @@
 
 TODO: add ClientAlerts and BestMatch backend
 
+0.27
+- add support for basic authorization
+
 0.25
 - add support for parallel requests using LWP::Parallel
 
