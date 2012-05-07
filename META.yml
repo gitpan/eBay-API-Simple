@@ -1,30 +1,30 @@
----
-abstract: 'Flexible SDK supporting all eBay web services'
+--- #YAML:1.0
+name:               eBay-API-Simple
+version:            0.28
+abstract:           Flexible SDK supporting all eBay web services
 author:
-  - 'Tim Keefer <tkeefer@gmail.com>'
-build_requires:
-  ExtUtils::MakeMaker: 0
+    - Tim Keefer <tkeefer@gmail.com>
+license:            unknown
+distribution_type:  module
 configure_requires:
-  ExtUtils::MakeMaker: 0
-dynamic_config: 1
-generated_by: 'ExtUtils::MakeMaker version 6.58, CPAN::Meta::Converter version 2.110930001'
-license: unknown
-meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
-name: eBay-API-Simple
-no_index:
-  directory:
-    - t
-    - inc
+    ExtUtils::MakeMaker:  0
+build_requires:
+    ExtUtils::MakeMaker:  0
 requires:
-  HTTP::Headers: 0
-  HTTP::Request: 0
-  LWP::UserAgent: 0
-  URI: 1.57
-  URI::Escape: 0
-  XML::LibXML: 0
-  XML::Parser: 0
-  XML::Simple: 0
-  YAML: 0
-version: 0.27
+    HTTP::Headers:   0
+    HTTP::Request:   0
+    LWP::UserAgent:  0
+    URI:             1.57
+    URI::Escape:     0
+    XML::LibXML:     0
+    XML::Parser:     0
+    XML::Simple:     0
+    YAML:            0
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.56
+meta-spec:
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4
