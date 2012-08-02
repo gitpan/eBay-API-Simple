@@ -22,4 +22,5 @@ ex/05Finding.t
 ex/05Finding_utf8.t
 ex/06Merchandising.t
 ex/09HalfShopping.t
-META.yml                                 Module meta-data (added by MakeMaker)
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)
